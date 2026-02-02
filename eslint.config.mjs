@@ -6,6 +6,18 @@ const compat = new FlatCompat({
 })
  
 const eslintConfig = [
+  //replaces .eslintignore
+  {
+    ignores: [
+      'node_modules/**',
+      '.next/**',
+      'dist/**',
+      //ignore generated prisma output (your warnings are coming from here)
+      'lib/generated/**',
+      'lib/generated/prisma/**',
+    ],
+  },
+
   ...compat.config({
     extends: ['next'],
     rules: {
@@ -14,5 +26,3 @@ const eslintConfig = [
     },
   }),
 ]
- 
-export default eslintConfig
