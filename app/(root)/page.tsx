@@ -1,5 +1,9 @@
+import Profile from "../user/profile/page";
+
 const Homepage = async () => {
-  return <>Hello</>;
+  return <>
+    {/* <Profile /> */}
+  </>;
 };
 
 export default Homepage;

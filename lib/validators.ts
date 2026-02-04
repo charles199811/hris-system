@@ -2,7 +2,6 @@ import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
 
-
 //Schema for signing users in
 export const signInFormSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -24,3 +23,8 @@ export const signUpFormSchema = z
     path: ["confirmPassword"],
   });
 
+//Schema for updating the user profile
+export const updateProfileSchema = z.object({
+  name: z.string().min(3, "Name must be at least 3 characters").nullable(),
+  email: z.string().min(3, "Email must be at least 3 characters").nullable(),
+});

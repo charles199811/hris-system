@@ -8,7 +8,6 @@ import { compareSync } from "bcrypt-ts-edge";
 import { UserRole } from "@prisma/client";
 
 const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "intelura.com";
-
 const ALLOWED_ROLES = new Set<UserRole>([UserRole.ADMIN, UserRole.ANALYST]);
 
 export const config = {
@@ -77,6 +76,7 @@ export const config = {
       if (user) {
         token.role = user.role;
         token.name = user.name;
+        
       }
 
       // optional: if you ever update the session name, keep token in sync
@@ -94,6 +94,7 @@ export const config = {
       session.user.role = token.role;
       session.user.name = token.name;
 
+      console.log(token);
       //If there is an update, set the user name
       if (trigger === "update") {
         session.user.name = user.name;
