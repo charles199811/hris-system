@@ -50,6 +50,15 @@ const UserButton = async () => {
               </div>
             </div>
           </DropdownMenuLabel>
+
+          {session.user.role === "ADMIN" && (
+            <DropdownMenuItem>
+              <Link href="/admin/overview" className="w-full">
+                Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
+
           <DropdownMenuItem className="p-0 mb-1">
             <form action={signOutUser} className="w-full">
               <Button

@@ -12,6 +12,7 @@ datasource db {
 enum UserRole {
   ADMIN
   ANALYST
+  USER
   HR
   MANAGER
   FINANCE
@@ -25,7 +26,7 @@ model User {
   emailVerified DateTime? @db.Timestamp(6)
   image         String?
   password    String? //for Hash password we can use bcrypt 
-  role        UserRole? @default(EMPLOYEE)
+  role        UserRole @default(USER)
   mfaEnabled  Boolean  @default(false)
   permissions String[] @default([])
 

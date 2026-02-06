@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { formatNumberWithDecimal } from "./utils";
 import { PAYMENT_METHODS } from "./constants";
+import { UserRole } from "@prisma/client";
 
 //Schema for signing users in
 export const signInFormSchema = z.object({
@@ -27,4 +28,10 @@ export const signUpFormSchema = z
 export const updateProfileSchema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters").nullable(),
   email: z.string().min(3, "Email must be at least 3 characters").nullable(),
+});
+
+//Schema to update user
+export const updateUserSchema = updateProfileSchema.extend({
+  id: z.string().min(1, "ID is required"),
+  role: z.nativeEnum(UserRole),
 });

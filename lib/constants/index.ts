@@ -1,4 +1,5 @@
 // import { title } from "process";
+import { UserRole } from "@prisma/client";
 
 export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "Prostore";
 export const APP_DESCRIPTION =
@@ -51,7 +52,7 @@ export const productDefualtValues = {
   banner: null,
 };
 
-export const USER_ROLES = ["admin", "user"];
+export const USER_ROLES: UserRole[] = Object.values(UserRole);
 
 export const reviewForDefaultValues = {
   title: "",
