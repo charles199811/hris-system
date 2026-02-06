@@ -27,7 +27,7 @@ const AdminUserPage = async (props: {
   const { page = "1" } = await props.searchParams;
 
   const users = await getAllUsers({ page: Number(page) });
-  console.log(users);
+
 
   return (
     <div className="space-y-2">
@@ -74,7 +74,7 @@ const AdminUserPage = async (props: {
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
-                    <Link href={`admin/users/${user.id}`}>Edit</Link>
+                    <Link href={`/admin/users/${user.id}`}>Edit</Link>
                   </Button>
                   <DeleteDialog id={user.id} action={deleteUser} />
                 </TableCell>
