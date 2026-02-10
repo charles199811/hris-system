@@ -113,7 +113,7 @@ const Profile = async () => {
 
   // If you later store salary in your Employee table, replace this with real values.
   const salary = {
-    currency: "EUR",
+    currency: "GBP",
     amount: 7794,
     lastUpdated: new Date(), // replace with DB updatedAt
   };
