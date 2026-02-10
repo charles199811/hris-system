@@ -71,6 +71,9 @@ const AdminUserPage = async (props: {
                   {user.role === "EMPLOYEE" && (
                     <Badge variant="default">Employee</Badge>
                   )}
+                  {user.role === "HR" && (
+                    <Badge variant="outline">HR</Badge>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">

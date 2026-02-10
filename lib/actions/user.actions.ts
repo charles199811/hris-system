@@ -202,3 +202,4 @@ export async function updateUser(user: z.infer<typeof updateUserSchema>) {
     };
   }
 }
+

@@ -12,19 +12,16 @@ type NavItem = {
 
 const navByRoute = {
   users: [
-    { title: "All User", href: "/admin/users" },
-    { title: "Add User", href: "/admin/users/add-user" },
+    { title: "All User", href: "/user/users" },
+    { title: "Add User", href: "/user/add-user" },
   ],
-  employees: [
-    { title: "All Employee", href: "/admin/employees/new" }, // change if your create route is different
-    { title: "Edit Employees", href: "/admin/employees" },
-  ],
-  default: [{ title: "Admin Dashboard", href: "/admin/overview" }],
+
+  default: [{ title: "Dashboard", href: "user/overview" }],
 };
 
 function getLinks(pathname: string): NavItem[] {
   if (pathname.startsWith("/admin/users")) return navByRoute.users;
-  if (pathname.startsWith("/admin/employees")) return navByRoute.employees;
+  // if (pathname.startsWith("/admin/employees")) return navByRoute.employees;
   return navByRoute.default;
 }
 
@@ -50,7 +47,7 @@ const MainNav = ({
             href={item.href}
             className={cn(
               "text-sm font-medium transition-colors hover:text-primary",
-              active ? "text-foreground" : "text-muted-foreground"
+              active ? "text-foreground" : "text-muted-foreground",
             )}
           >
             {item.title}
