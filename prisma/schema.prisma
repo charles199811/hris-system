@@ -1,4 +1,3 @@
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
@@ -25,6 +24,7 @@ enum AttendanceStatus {
   LEAVE
   HOLIDAY
   WEEKOFF
+  PUBLIC_HOLIDAY
 }
 
 model User {
@@ -33,16 +33,16 @@ model User {
   email         String    @unique(map: "user_email_idx")
   emailVerified DateTime? @db.Timestamp(6)
   image         String?
-  password    String? //for Hash password we can use bcrypt 
-  role        UserRole @default(USER)
-  mfaEnabled  Boolean  @default(false)
-  permissions String[] @default([])
+  password      String? //for Hash password we can use bcrypt 
+  role          UserRole  @default(USER)
+  mfaEnabled    Boolean   @default(false)
+  permissions   String[]  @default([])
 
   employeeId String?   @unique @db.Uuid
   employee   Employee? @relation("UserEmployee", fields: [employeeId], references: [id], onDelete: SetNull)
 
-  sessions Session[]
-  account  Account[]
+  sessions    Session[]
+  account     Account[]
   attendances Attendance[]
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
@@ -67,7 +67,7 @@ model Account {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([provider, providerAccountId])//Combine both and creates a primary key
+  @@id([provider, providerAccountId]) //Combine both and creates a primary key
 }
 
 model Session {
@@ -106,8 +106,8 @@ model Employee {
   user              User?    @relation("UserEmployee")
 
   // if moving to RBAC via User.role,it is posible remove this later
-  accessPerssiions  String   @default("user")
-  remoteWork        Boolean?
+  accessPerssiions String   @default("user")
+  remoteWork       Boolean?
 
   departmentId String?     @db.Uuid
   department   Department? @relation("DepartmentEmployees", fields: [departmentId], references: [id], onDelete: SetNull)
@@ -135,26 +135,26 @@ model Employee {
 }
 
 model Attendance {
-  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  userId      String           @db.Uuid
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  date        DateTime         @db.Date   // the day (no time)
-  status      AttendanceStatus @default(PRESENT)
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date   DateTime         @db.Date // the day (no time)
+  status AttendanceStatus @default(PRESENT)
 
   checkIn     DateTime?
   checkOut    DateTime?
-  minutesLate Int              @default(0)
-  overtimeMin Int              @default(0)
+  workMinutes Int       @default(0)
 
-  notes       String?
+  notes String?
 
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([userId, date])  //  one record per employee per day
-  @@index([userId, date])   //  fast monthly queries
+  @@unique([userId, date], name: "attendance_user_date_unique")
+  @@index([date])
+  @@index([userId])
 }
 
 model Branch {
@@ -162,7 +162,7 @@ model Branch {
   branchName    String
   branchAddress String
   branchPhone   String
-  empCount       Int
+  empCount      Int
 
   branchEmail String
 
@@ -215,4 +215,3 @@ model Shift {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-

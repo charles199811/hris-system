@@ -19,7 +19,7 @@ const navByRoute = {
     { title: "All Employee", href: "/admin/employees/new" }, // change if your create route is different
     { title: "Edit Employees", href: "/admin/employees" },
   ],
-  default: [{ title: "Admin Dashboard", href: "/admin/overview" }],
+  default: [{ title: "Admin ", href: "/admin/overview" }],
 };
 
 function getLinks(pathname: string): NavItem[] {
