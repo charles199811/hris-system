@@ -1,0 +1,133 @@
+import Link from "next/link"
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+type EmployeeRow = {
+  id: string
+  fullName: string
+  email: string
+  phoneNo: string
+  employmentType?: string
+  isActive?: boolean
+  contractEndDate?: Date | null
+
+  user?: {
+    name: string | null
+    email: string
+    role: string
+  } | null
+
+  department?: { departmentName: string } | null
+  branch?: { branchName: string } | null
+  position?: { name: string } | null
+  shift?: { name: string } | null
+}
+
+type Props = {
+  employees: EmployeeRow[]
+}
+
+function labelEnum(value?: string) {
+  if (!value) return "—"
+  return value.replaceAll("_", " ")
+}
+
+function formatDate(d?: Date | null) {
+  if (!d) return "—"
+  return new Intl.DateTimeFormat("en-GB", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit",
+  }).format(new Date(d))
+}
+
+export default function EmployeeTable({ employees }: Props) {
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Employees</CardTitle>
+
+        <Button asChild>
+          <Link href="/admin/employees/new">Add Employee</Link>
+        </Button>
+      </CardHeader>
+
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>Employment Type</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Branch</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Contract End</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {employees.map((e) => (
+              <TableRow key={e.id}>
+                <TableCell className="font-medium">
+                  <div className="flex flex-col">
+                    <span>{e.fullName}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {e.user?.email ?? e.email}
+                    </span>
+                  </div>
+                </TableCell>
+
+                <TableCell>{e.user?.role ?? "—"}</TableCell>
+                <TableCell>{labelEnum(e.employmentType)}</TableCell>
+
+                <TableCell>{e.department?.departmentName ?? "—"}</TableCell>
+                <TableCell>{e.branch?.branchName ?? "—"}</TableCell>
+
+                <TableCell>
+                  {e.isActive ? (
+                    <Badge variant="secondary">Active</Badge>
+                  ) : (
+                    <Badge variant="destructive">Inactive</Badge>
+                  )}
+                </TableCell>
+
+                <TableCell>{formatDate(e.contractEndDate ?? null)}</TableCell>
+
+                <TableCell className="text-right">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/admin/employees/${e.id}`}>View</Link>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+
+            {employees.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-muted-foreground">
+                  No employees found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  )
+}

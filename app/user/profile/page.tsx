@@ -211,7 +211,7 @@ const Profile = async () => {
             <div className="mt-6">
               <div className="h-4 w-full rounded-full bg-black/30">
                 <div
-                  className="h-4 rounded-full bg-yellow-400"
+                  className="h-4 rounded-full bg-white"
                   style={{ width: `${payday.progressPct}%` }}
                 />
               </div>
@@ -257,13 +257,13 @@ const Profile = async () => {
               <Bar
                 label={`Attended ${attendanceThisMonth.attended}`}
                 value={attendedPct}
-                colorClass="bg-yellow-400"
+                colorClass="bg-white"
               />
 
               <Bar
                 label={`Absented: ${attendanceThisMonth.absent}`}
                 value={absentPct}
-                colorClass="bg-yellow-400"
+                colorClass="bg-white"
               />
 
               <div className="space-y-2">
@@ -281,7 +281,7 @@ const Profile = async () => {
 
                 <div className="h-12 w-full rounded-full bg-slate-700/60 p-2">
                   <div
-                    className="h-full rounded-full bg-yellow-400"
+                    className="h-full rounded-full  bg-white"
                     style={{ width: `${latePct}%` }}
                   />
                 </div>

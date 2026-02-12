@@ -13,7 +13,7 @@ import { formatId, formatDateTime, formatCurreny } from "@/lib/utils";
 import Link from "next/link"
 import Pagination from "@/components/shared/header/pagination";
 import { Badge } from "@/components/ui/badge";
-import DeleteDialog from "@/components/shared/delete-dialog"
+import DeleteDialog from "@/components/shared/delete-dialog";
 
 export const metadata: Metadata = {
   title: "Admin Users",

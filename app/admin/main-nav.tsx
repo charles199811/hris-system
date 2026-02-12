@@ -17,8 +17,9 @@ const navByRoute = {
   ],
   employees: [
     { title: "All Employee", href: "/admin/employees/new" }, // change if your create route is different
-    { title: "Edit Employees", href: "/admin/employees" },
+    { title: "Employees Details", href: "/admin/employees" },
   ],
+  
   default: [{ title: "Admin ", href: "/admin/overview" }],
 };
 

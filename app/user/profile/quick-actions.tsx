@@ -52,7 +52,7 @@ export function QuickActions() {
             className="rounded-2xl border-0 bg-slate-950/40 p-8 shadow-sm"
           >
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-yellow-400">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-950">
                 <Icon className="h-10 w-10 text-white" />
               </div>
 
@@ -61,7 +61,7 @@ export function QuickActions() {
               <Button
                 asChild
                 variant="link"
-                className="mt-4 text-white hover:text-yellow-300"
+                className="mt-4 text-white hover:text-white"
               >
                 <Link href={href} className="flex items-center gap-2">
                   {cta} <span aria-hidden>→</span>
