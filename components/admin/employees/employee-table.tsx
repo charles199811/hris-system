@@ -1,13 +1,8 @@
-import Link from "next/link"
+import Link from "next/link";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -15,45 +10,44 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import { ensureEmployeeAndRedirect } from "@/lib/actions/employee.actions";
 
 type EmployeeRow = {
-  id: string
-  fullName: string
-  email: string
-  phoneNo: string
-  employmentType?: string
-  isActive?: boolean
-  contractEndDate?: Date | null
+  id: string; // row key (employeeId or userId)
+  userId: string; // ✅ ALWAYS userId
 
-  user?: {
-    name: string | null
-    email: string
-    role: string
-  } | null
+  fullName: string;
+  email: string;
+  phoneNo: string | null; // keep string
 
-  department?: { departmentName: string } | null
-  branch?: { branchName: string } | null
-  position?: { name: string } | null
-  shift?: { name: string } | null
-}
+  employmentType?: string;
+  isActive?: boolean;
+  contractEndDate?: Date | null;
+
+  user?: { name: string | null; email: string; role: string } | null;
+  department?: { departmentName: string } | null;
+  branch?: { branchName: string } | null;
+  position?: { name: string } | null;
+  shift?: { name: string } | null;
+};
 
 type Props = {
-  employees: EmployeeRow[]
-}
+  employees: EmployeeRow[];
+};
 
 function labelEnum(value?: string) {
-  if (!value) return "—"
-  return value.replaceAll("_", " ")
+  if (!value) return "—";
+  return value.replaceAll("_", " ");
 }
 
 function formatDate(d?: Date | null) {
-  if (!d) return "—"
+  if (!d) return "—";
   return new Intl.DateTimeFormat("en-GB", {
     year: "numeric",
     month: "short",
     day: "2-digit",
-  }).format(new Date(d))
+  }).format(new Date(d));
 }
 
 export default function EmployeeTable({ employees }: Props) {
@@ -62,9 +56,9 @@ export default function EmployeeTable({ employees }: Props) {
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Employees</CardTitle>
 
-        <Button asChild>
+        {/* <Button asChild>
           <Link href="/admin/employees/new">Add Employee</Link>
-        </Button>
+        </Button> */}
       </CardHeader>
 
       <CardContent>
@@ -111,16 +105,31 @@ export default function EmployeeTable({ employees }: Props) {
                 <TableCell>{formatDate(e.contractEndDate ?? null)}</TableCell>
 
                 <TableCell className="text-right">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/admin/employees/${e.id}`}>View</Link>
-                  </Button>
+                  <form action={ensureEmployeeAndRedirect}>
+                    <input type="hidden" name="userId" value={e.userId} />
+
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className={
+                        e.isActive
+                          ? "bg-white text-black hover:bg-gray-200"
+                          : "bg-red-600 text-white hover:bg-red-700"
+                      }
+                    >
+                      {e.isActive ? "Active" : "Inactive"}
+                    </Button>
+                  </form>
                 </TableCell>
               </TableRow>
             ))}
 
             {employees.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="text-center text-muted-foreground">
+                <TableCell
+                  colSpan={8}
+                  className="text-center text-muted-foreground"
+                >
                   No employees found.
                 </TableCell>
               </TableRow>
@@ -129,5 +138,5 @@ export default function EmployeeTable({ employees }: Props) {
         </Table>
       </CardContent>
     </Card>
-  )
+  );
 }

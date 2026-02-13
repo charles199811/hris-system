@@ -16,7 +16,7 @@ const navByRoute = {
     { title: "Add User", href: "/admin/users/add-user" },
   ],
   employees: [
-    { title: "All Employee", href: "/admin/employees/new" }, // change if your create route is different
+    { title: "All Employee", href: "/admin/employees/employees-with-role" }, // change if your create route is different
     { title: "Employees Details", href: "/admin/employees" },
   ],
   

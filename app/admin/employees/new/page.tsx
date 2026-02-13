@@ -1,5 +1,5 @@
-const AllEmployees = () => {
-    return ( <>All Employees</> );
+const NewEmployee = () => {
+    return ( <>NewEmployee</> );
 }
  
-export default AllEmployees;
+export default NewEmployee;

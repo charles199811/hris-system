@@ -5,6 +5,7 @@ import ReviewStatusList from "@/components/admin/employees/review-status-list";
 import LastDayList from "@/components/admin/employees/last-day-list";
 import EmployeeTable from "@/components/admin/employees/employee-table";
 
+
 function firstDayOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
@@ -26,20 +27,16 @@ export default async function EmployeeData() {
   });
 
   // 2) Headcount chart (active employees grouped by department + employmentType)
-  const headcount = await prisma.employee.groupBy({
-    by: ["departmentId", "employmentType"],
-    where: { isActive: true },
-    _count: { _all: true },
-  });
+const headcountByType = await prisma.employee.groupBy({
+  by: ["employmentType"],
+  where: { isActive: true },
+  _count: { _all: true },
+})
 
-  // Fetch department names for labels
-  const deptIds = Array.from(
-    new Set(headcount.map((h) => h.departmentId).filter(Boolean)),
-  ) as string[];
-  const departments = await prisma.department.findMany({
-    where: { id: { in: deptIds } },
-    select: { id: true, departmentName: true },
-  });
+  const headcountData = headcountByType.map((r) => ({
+  employmentType: r.employmentType,
+  count: r._count._all,
+}))
 
   // 3) Performance review status (this month)
   const reviewsThisMonth = await prisma.performanceReview.findMany({
@@ -73,7 +70,7 @@ export default async function EmployeeData() {
 
   return (
     <div className="space-y-6">
-      <HeadcountChart headcount={headcount} departments={departments} />
+      <HeadcountChart data={headcountData} />
       <ReviewStatusList month={month} reviews={reviewsThisMonth} />
       <LastDayList items={lastDays} />
       <EmployeeTable employees={employees} /> 
