@@ -2,14 +2,16 @@ import { prisma } from "@/db/prisma"
 import { notFound } from "next/navigation"
 
 type Props = {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export default async function EditEmployeePage({ params }: Props) {
+  const { id } = await params
+
   const employee = await prisma.employee.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       department: true,
       branch: true,
@@ -19,7 +21,7 @@ export default async function EditEmployeePage({ params }: Props) {
     },
   })
 
-  if (!employee) return notFound()
+  if (!employee) notFound()
 
   return (
     <div className="p-6">
