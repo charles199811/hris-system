@@ -13,7 +13,8 @@ export function AttendanceButton({ isSignedIn }: Props) {
   return (
     <Button
       size="lg"
-      className="bg-yellow-400 hover:bg-white text-black px-8 py-6 text-lg"
+      className="font-semibold bg-white hover:bg-blue-900 hover:text-white"
+     
       onClick={() => setSignedIn(!signedIn)}
     >
       {signedIn ? "ATTENDANCE SIGN OFF" : "ATTENDANCE SIGN IN"}

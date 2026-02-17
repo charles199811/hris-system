@@ -179,27 +179,34 @@ model PerformanceReview {
 }
 
 model Attendance {
-  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  userId String @db.Uuid
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String   @db.Uuid
+  user         User     @relation(fields:[userId], references:[id], onDelete:Cascade)
 
-  date   DateTime         @db.Date // the day (no time)
-  status AttendanceStatus @default(PRESENT)
+  date         DateTime @db.Date
 
-  checkIn     DateTime?
-  checkOut    DateTime?
-  workMinutes Int       @default(0)
+  checkIn      DateTime?
+  checkOut     DateTime?
+  workingHours Decimal? @db.Decimal(6,2)
 
-  notes String?
+  status       AttendanceStatus
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  workMode     WorkMode @default(OFFICE)
 
-  @@unique([userId, date], name: "attendance_user_date_unique")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([userId, date])
   @@index([date])
   @@index([userId])
 }
+
+enum WorkMode {
+  OFFICE
+  REMOTE
+}
+
 
 model Branch {
   id            String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

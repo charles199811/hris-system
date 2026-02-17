@@ -50,9 +50,7 @@ export default function AdminLayout({
           </aside>
 
           {/* Page content */}
-          <main className="flex-1 py-6">
-            {children}
-          </main>
+          <main className="flex-1 py-6">{children}</main>
         </div>
       </div>
     </div>

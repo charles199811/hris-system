@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { SessionProvider } from "next-auth/react";
 import { AttendanceButton } from "@/components/shared/attendance-button";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -44,16 +45,13 @@ function getPaydayInfo(date = new Date(), paydayDay = 1) {
   const thisMonthPayday = new Date(year, month, paydayDay);
   const nextMonthPayday = new Date(year, month + 1, paydayDay);
 
-  // If today is on/after payday, next payday is next month, else this month
   const nextPayday =
     date >= thisMonthPayday ? nextMonthPayday : thisMonthPayday;
 
-  // Days remaining (ceil to feel natural)
   const msPerDay = 1000 * 60 * 60 * 24;
   const diff = nextPayday.getTime() - date.getTime();
   const daysRemaining = Math.max(0, Math.ceil(diff / msPerDay));
 
-  // Progress from payday -> next payday
   const prevPayday =
     date >= thisMonthPayday
       ? thisMonthPayday
@@ -102,22 +100,21 @@ const Profile = async () => {
     redirect("/sign-in");
   }
 
-  // Keep your existing logic (you can wire real values later)
   const isSignedInToday = false;
 
-  // --- Dashboard mock data (swap with real DB values later) ---
   const quote = {
     text: "Loading Quote...",
     author: "Loading Author...",
   };
 
-  // If you later store salary in your Employee table, replace this with real values.
   const salary = {
     currency: "GBP",
     amount: 7794,
-    lastUpdated: new Date(), // replace with DB updatedAt
+    lastUpdated: new Date(),
   };
 
+  // ✅ set your Intelurapedia link here
+  const intelurapediaUrl = "https://your-intelurapedia-link.com";
   const now = new Date();
   const monthStats = getMonthStats(now);
   const payday = getPaydayInfo(now, 1);
@@ -126,8 +123,8 @@ const Profile = async () => {
     attended: 5,
     absent: 2,
     expectedWorkDays: monthStats.workDays,
-    hoursDelta: -16, // e.g. -16h
-    lateHours: 15.95, // e.g. 15.95 hours late
+    hoursDelta: -16,
+    lateHours: 15.95,
   };
 
   const attendedPct =
@@ -142,40 +139,55 @@ const Profile = async () => {
         100
       : 0;
 
-  // Treat "late" as a severity bar (cap at 100). Adjust when you define your rule.
   const latePct = clamp(attendanceThisMonth.lateHours * 6, 0, 100);
 
   return (
     <SessionProvider session={session}>
       <div className="space-y-6">
         {/* ✅ KEEP THIS CARD SAME (your current progress) */}
-        <div className="flex items-center justify-between rounded-xl bg-slate-900 p-6 text-white shadow">
+        <div className="flex items-center justify-between rounded-xl bg-slate-900 p-6 text-white ">
           <div>
-            <h1 className="text-2xl font-semibold">
+            <h1 className="text-2xl font-serif">
               Welcome, {session?.user.name}!
             </h1>
             <p className="mt-1 text-sm text-slate-300">
-              Role: <span className="font-medium">{session?.user.role}</span>
+              Role: <span className="font-normal">{session?.user.role}</span>
             </p>
           </div>
 
           <AttendanceButton isSignedIn={isSignedInToday} />
         </div>
 
-        {/* Rest of dashboard (matches your screenshot layout style) */}
+        {/* Rest of dashboard */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quote of the day (wide) */}
-          <div className="lg:col-span-9 rounded-xl bg-slate-900 p-6 text-white shadow">
-            <h2 className="text-2xl font-semibold">Quote of the day</h2>
+          <div className="lg:col-span-6 rounded-xl bg-slate-900 p-6 text-white shadow">
+            <h2 className="text-2xl- font-serif">Quote of the day</h2>
             <div className="mt-5 space-y-2">
               <p className="text-2xl italic text-slate-100">“{quote.text}”</p>
               <p className="text-sm italic text-slate-400">- {quote.author}</p>
             </div>
           </div>
 
-          {/* Salary (right) */}
+          {/* ✅ Intelurapedia (right - ABOVE salary) */}
           <div className="lg:col-span-3 rounded-xl bg-slate-900 p-6 text-white shadow">
-            <h2 className="text-2xl font-semibold">Your Salary</h2>
+            <h2 className="text-2xl font-serif">Intelurapedia</h2>
+            <p className="mt-4 text-sm text-slate-300">
+              Company knowledge base, policies, internal guides and resources.
+            </p>
+
+            <div className="mt-6">
+              <Link href={intelurapediaUrl} target="_blank" rel="noreferrer">
+                <button className="w-full rounded-lg bg-white px-4 py-3 font-semibold text-black transition hover:bg-blue-900 hover:text-white">
+                  Visit Intelurapedia
+                </button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Salary (right - BELOW Intelurapedia) */}
+          <div className="lg:col-span-3 rounded-xl bg-slate-900 p-6 text-white shadow">
+            <h2 className="text-2xl font-serif">Your Salary</h2>
             <div className="mt-5">
               <p className="text-center text-2xl font-semibold">
                 {salary.currency}{" "}
@@ -199,11 +211,10 @@ const Profile = async () => {
 
             <div className="mt-6 space-y-3 text-base text-white/90">
               <p>
-                <span className="font-semibold">Pay Day:</span> 1st of every
-                month.
+                <span className="font-serif">Pay Day:</span> 1st of every month.
               </p>
               <p>
-                <span className="font-semibold">Days Remaining:</span>{" "}
+                <span className="font-serif">Days Remaining:</span>{" "}
                 {payday.daysRemaining} Days.
               </p>
             </div>
@@ -227,22 +238,16 @@ const Profile = async () => {
 
             <div className="mt-6 space-y-3 text-slate-200">
               <div className="flex items-center justify-between">
-                <span className="text-slate-300">Work Days:</span>
-                <span className="font-semibold">
-                  {monthStats.workDays} Days
-                </span>
+                <span className="text-slate-300 font-serif">Work Days:</span>
+                <span className="font-serif">{monthStats.workDays} Days</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-300">Weekends:</span>
-                <span className="font-semibold">
-                  {monthStats.weekends} Days
-                </span>
+                <span className="text-slate-300 font-serif">Weekends:</span>
+                <span className="font-serif">{monthStats.weekends} Days</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-slate-300">Holidays:</span>
-                <span className="font-semibold">
-                  {monthStats.holidays} Days
-                </span>
+                <span className="text-slate-300 font-serif">Holidays:</span>
+                <span className="font-serif">{monthStats.holidays} Days</span>
               </div>
             </div>
           </div>
@@ -253,7 +258,7 @@ const Profile = async () => {
               Your Attendance This Month
             </h2>
 
-            <div className="mt-6 space-y-5">
+            <div className="mt-6 space-y-5 font-serif">
               <Bar
                 label={`Attended ${attendanceThisMonth.attended}`}
                 value={attendedPct}
@@ -269,7 +274,7 @@ const Profile = async () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm text-slate-200">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">Hours:</span>
+                    <span className="font-serif">Hours:</span>
                     <span className="text-slate-300">
                       {attendanceThisMonth.hoursDelta}h
                     </span>

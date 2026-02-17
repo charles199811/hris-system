@@ -56,7 +56,9 @@ export function QuickActions() {
                 <Icon className="h-10 w-10 text-white" />
               </div>
 
-              <h3 className="mt-6 text-2xl font-semibold text-white">{title}</h3>
+              <h3 className="mt-6 text-2xl font-semibold text-white">
+                {title}
+              </h3>
 
               <Button
                 asChild
