@@ -145,7 +145,7 @@ const Profile = async () => {
     <SessionProvider session={session}>
       <div className="space-y-6">
         {/* ✅ KEEP THIS CARD SAME (your current progress) */}
-        <div className="flex items-center justify-between rounded-xl bg-slate-900 p-6 text-white ">
+        <div className="flex items-center justify-between rounded-xl bg-blue-600 p-6 text-white ">
           <div>
             <h1 className="text-2xl font-serif">
               Welcome, {session?.user.name}!
@@ -155,13 +155,13 @@ const Profile = async () => {
             </p>
           </div>
 
-          <AttendanceButton isSignedIn={isSignedInToday} />
+          
         </div>
 
         {/* Rest of dashboard */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quote of the day (wide) */}
-          <div className="lg:col-span-6 rounded-xl bg-slate-900 p-6 text-white shadow">
+          <div className="lg:col-span-6 rounded-xl bg-blue-600 p-6 text-white shadow-md">
             <h2 className="text-2xl- font-serif">Quote of the day</h2>
             <div className="mt-5 space-y-2">
               <p className="text-2xl italic text-slate-100">“{quote.text}”</p>
@@ -170,7 +170,7 @@ const Profile = async () => {
           </div>
 
           {/* ✅ Intelurapedia (right - ABOVE salary) */}
-          <div className="lg:col-span-3 rounded-xl bg-slate-900 p-6 text-white shadow">
+          <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-serif">Intelurapedia</h2>
             <p className="mt-4 text-sm text-slate-300">
               Company knowledge base, policies, internal guides and resources.
@@ -186,7 +186,7 @@ const Profile = async () => {
           </div>
 
           {/* Salary (right - BELOW Intelurapedia) */}
-          <div className="lg:col-span-3 rounded-xl bg-slate-900 p-6 text-white shadow">
+          <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-serif">Your Salary</h2>
             <div className="mt-5">
               <p className="text-center text-2xl font-semibold">
@@ -195,7 +195,7 @@ const Profile = async () => {
                   maximumFractionDigits: 0,
                 })}
               </p>
-              <div className="my-4 h-px w-full bg-slate-700" />
+              <div className="my-4 h-px w-full bg-blue-600 " />
               <p className="text-sm text-slate-300">
                 Last Updated:{" "}
                 <span className="text-slate-200">
@@ -206,7 +206,7 @@ const Profile = async () => {
           </div>
 
           {/* Pay Day (left purple) */}
-          <div className="lg:col-span-4 rounded-xl bg-gradient-to-br bg-slate-900 to-indigo-900 p-6 text-white shadow">
+          <div className="lg:col-span-4 rounded-xl bg-gradient-to-br bg-blue-600  to-indigo-900 p-6 text-white shadow">
             <h2 className="text-2xl font-semibold">Pay Day</h2>
 
             <div className="mt-6 space-y-3 text-base text-white/90">
@@ -220,7 +220,7 @@ const Profile = async () => {
             </div>
 
             <div className="mt-6">
-              <div className="h-4 w-full rounded-full bg-black/30">
+              <div className="h-4 w-full rounded-full bg-blue-600 ">
                 <div
                   className="h-4 rounded-full bg-white"
                   style={{ width: `${payday.progressPct}%` }}
@@ -233,7 +233,7 @@ const Profile = async () => {
           </div>
 
           {/* Month data (middle) */}
-          <div className="lg:col-span-3 rounded-xl bg-slate-900 p-6 text-white shadow">
+          <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-semibold">Data of {monthName(now)}</h2>
 
             <div className="mt-6 space-y-3 text-slate-200">
@@ -253,7 +253,7 @@ const Profile = async () => {
           </div>
 
           {/* Attendance (right wide) */}
-          <div className="lg:col-span-5 rounded-xl bg-slate-900 p-6 text-white shadow">
+          <div className="lg:col-span-5 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-semibold">
               Your Attendance This Month
             </h2>

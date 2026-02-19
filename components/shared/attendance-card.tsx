@@ -134,7 +134,7 @@ export function AttendanceCard() {
   }, [attendance]);
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-gradient-to-r from-blue-950 via-blue-600 to-blue-400 text-white shadow-xl rounded-2xl">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
         <CardTitle className="text-base">Attendance</CardTitle>
 
@@ -156,14 +156,14 @@ export function AttendanceCard() {
 
         <div className="grid grid-cols-2 gap-3 text-sm">
           <div className="rounded-md border p-3">
-            <div className="text-muted-foreground">Check in</div>
+            <div className="text-white">Check in</div>
             <div className="mt-1 font-medium">
               {formatTime(attendance?.checkIn ?? null)}
             </div>
           </div>
 
           <div className="rounded-md border p-3">
-            <div className="text-muted-foreground">Check out</div>
+            <div className="text-white ">Check out</div>
             <div className="mt-1 font-medium">
               {formatTime(attendance?.checkOut ?? null)}
             </div>
@@ -218,7 +218,7 @@ export function AttendanceCard() {
               {actionLoading === "out" ? "Checking out…" : "Check Out"}
             </Button>
           ) : (
-            <Button className="w-full" variant="secondary" onClick={loadToday}>
+            <Button className="w-full bg-blue-600" variant="blue" onClick={loadToday}>
               Completed (Refresh)
             </Button>
           )}

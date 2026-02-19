@@ -40,7 +40,7 @@ const actions: QuickAction[] = [
 
 export function QuickActions() {
   return (
-    <Card className="rounded-2xl border-0 bg-slate-900/30 p-6 shadow-sm">
+    <Card className="rounded-2xl border-0 bg-blue-600 p-6 shadow-sm">
       <h2 className="text-3xl font-semibold tracking-tight text-white">
         Quick Actions
       </h2>
@@ -49,10 +49,10 @@ export function QuickActions() {
         {actions.map(({ title, href, cta, Icon }) => (
           <Card
             key={title}
-            className="rounded-2xl border-0 bg-slate-950/40 p-8 shadow-sm"
+            className="rounded-2xl border-0 bg-blue-900 p-8 shadow-sm"
           >
             <div className="flex flex-col items-center text-center">
-              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-950">
+              <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-blue-600">
                 <Icon className="h-10 w-10 text-white" />
               </div>
 
