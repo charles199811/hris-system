@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { AttendanceButton } from "@/components/shared/attendance-button";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { SalaryAndPaydayCard } from "./your-salary";
 
 export const metadata: Metadata = {
   title: "Profile",
@@ -184,54 +185,7 @@ const Profile = async () => {
               </Link>
             </div>
           </div>
-
-          {/* Salary (right - BELOW Intelurapedia) */}
-          <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
-            <h2 className="text-2xl font-serif">Your Salary</h2>
-            <div className="mt-5">
-              <p className="text-center text-2xl font-semibold">
-                {salary.currency}{" "}
-                {salary.amount.toLocaleString("en-GB", {
-                  maximumFractionDigits: 0,
-                })}
-              </p>
-              <div className="my-4 h-px w-full bg-blue-600 " />
-              <p className="text-sm text-slate-300">
-                Last Updated:{" "}
-                <span className="text-slate-200">
-                  {salary.lastUpdated.toISOString().slice(0, 10)}
-                </span>
-              </p>
-            </div>
-          </div>
-
-          {/* Pay Day (left purple) */}
-          <div className="lg:col-span-4 rounded-xl bg-gradient-to-br bg-blue-600  to-indigo-900 p-6 text-white shadow">
-            <h2 className="text-2xl font-semibold">Pay Day</h2>
-
-            <div className="mt-6 space-y-3 text-base text-white/90">
-              <p>
-                <span className="font-serif">Pay Day:</span> 1st of every month.
-              </p>
-              <p>
-                <span className="font-serif">Days Remaining:</span>{" "}
-                {payday.daysRemaining} Days.
-              </p>
-            </div>
-
-            <div className="mt-6">
-              <div className="h-4 w-full rounded-full bg-blue-600 ">
-                <div
-                  className="h-4 rounded-full bg-white"
-                  style={{ width: `${payday.progressPct}%` }}
-                />
-              </div>
-              <p className="mt-2 text-sm text-white/80">
-                {payday.progressPct}%
-              </p>
-            </div>
-          </div>
-
+          <SalaryAndPaydayCard />
           {/* Month data (middle) */}
           <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-semibold">Data of {monthName(now)}</h2>
