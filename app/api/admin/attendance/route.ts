@@ -96,7 +96,12 @@ export async function GET(req: Request) {
             name: true,
             email: true,
             role: true,
-            employee: { select: { departmentId: true } },
+            employee: {
+              select: {
+                departmentId: true,
+                employmentType: true, //add this
+              },
+            },
           },
         },
       },
