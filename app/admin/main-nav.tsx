@@ -20,7 +20,7 @@ const navByRoute = {
     { title: "Employees Details", href: "/admin/employees" },
   ],
   
-  default: [{ title: "Admin ", href: "/admin/overview" }],
+  default: [{ title: "", href: "/admin/overview" }],
 };
 
 function getLinks(pathname: string): NavItem[] {

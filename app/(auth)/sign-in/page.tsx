@@ -36,9 +36,9 @@ const SignInPage = async (props: {
         <CardHeader className="space-y-4">
           <Link href="/" className="flex-center">
             <Image
-              src="/images/logo.svg"
-              width={100}
-              height={100}
+              src="/images/favicon.png"
+              width={148}
+              height={148}
               alt={`${APP_NAME} logo`}
               priority={true}
             />
