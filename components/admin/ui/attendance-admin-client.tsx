@@ -33,8 +33,22 @@ type AttendanceRow = {
     name: string | null;
     email: string | null;
     role: string;
+    employee?: {
+      employmentType?: string | null;
+    };
   };
 };
+
+function requiredHoursByType(type?: string | null) {
+  if (type === "PART_TIME") return 4;
+  return 8; // FULL_TIME default
+}
+
+function toNumber(v: any) {
+  if (v == null) return 0;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString();

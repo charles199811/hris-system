@@ -17,7 +17,6 @@ function londonDateAsUTCDate(ymd: string) {
   return new Date(`${ymd}T00:00:00.000Z`);
 }
 
-//-----------------------------------------------------------------------------------------------------------------------------------------
 export async function POST(req: Request) {
   const session = await auth();
   const userId = session?.user?.id;
@@ -37,13 +36,21 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}));
   const workMode = body?.workMode === "REMOTE" ? "REMOTE" : "OFFICE";
 
-  //Block if special status already exists
+  // Block if special status already exists
   if (
     existing &&
     ["LEAVE", "HOLIDAY", "PUBLIC_HOLIDAY", "WEEKOFF"].includes(existing.status)
   ) {
     return NextResponse.json(
       { error: `Cannot check in. Status is ${existing.status}` },
+      { status: 400 },
+    );
+  }
+
+  // ✅ Block if already checked out
+  if (existing?.checkOut) {
+    return NextResponse.json(
+      { error: "Already checked out today" },
       { status: 400 },
     );
   }
@@ -62,12 +69,12 @@ export async function POST(req: Request) {
       userId,
       date,
       checkIn: now,
-      status: "PRESENT",
+      status: "PRESENT", // (or IN_PROGRESS if your enum supports it)
       workMode,
     },
     update: {
       checkIn: now,
-      status: "PRESENT",
+      status: "PRESENT", // (or IN_PROGRESS if your enum supports it)
       workMode,
     },
   });

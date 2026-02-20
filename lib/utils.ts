@@ -150,3 +150,32 @@ export function formUrlQuery({
     }
   );
 }
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function monthName(d: Date) {
+  return d.toLocaleString("en-GB", { month: "long" });
+}
+
+function getMonthStats(date = new Date()) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  const first = new Date(year, month, 1);
+  const last = new Date(year, month + 1, 0);
+  const daysInMonth = last.getDate();
+
+  let weekends = 0;
+  let workDays = 0;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(year, month, day);
+    const dow = d.getDay(); // 0 Sun ... 6 Sat
+    if (dow === 0 || dow === 6) weekends++;
+    else workDays++;
+  }
+
+  return { daysInMonth, workDays, weekends, holidays: 0 };
+}

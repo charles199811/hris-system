@@ -4,41 +4,45 @@ import { prisma } from "@/db/prisma";
 const LONDON_TZ = "Europe/London";
 const CRON_SECRET = process.env.CRON_SECRET!;
 
-
-
 function londonYMD(d = new Date()) {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: LONDON_TZ,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(d); //YYYY-MM-DD
+  }).format(d);
 }
 
 function londonDateAsUTCDateFromYMD(ymd: string) {
-  return new Date(`${ymd}T00:00:00.000Z`); // stored as @db.Date
+  return new Date(`${ymd}T00:00:00.000Z`);
 }
 
 function getYesterdayLondonYMD() {
-  // Take "now in London", then subtract 1 day safely by using UTC date from ymd.
   const todayYMD = londonYMD(new Date());
   const todayUTC = new Date(`${todayYMD}T00:00:00.000Z`);
   todayUTC.setUTCDate(todayUTC.getUTCDate() - 1);
-  return londonYMD(todayUTC); // returns yesterday in London
+  return londonYMD(todayUTC);
 }
 
-function isWeekendLondon(ymd: string) {
-  // Determine day-of-week for London date key:
-  // Create UTC midnight for that date; day-of-week is stable for date-only.
+function isWeekend(ymd: string) {
   const dt = new Date(`${ymd}T00:00:00.000Z`);
-  const day = dt.getUTCDay(); // 0 Sun, 6 Sat
+  const day = dt.getUTCDay();
   return day === 0 || day === 6;
+}
+
+function hoursBetween(a: Date, b: Date) {
+  const ms = b.getTime() - a.getTime();
+  return Math.max(0, ms / (1000 * 60 * 60));
+}
+
+function requiredHoursByType(type?: string | null) {
+  return type === "PART_TIME" ? 4 : 8;
 }
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const secretFromQuery = searchParams.get("secret");
-  const dateOverride = searchParams.get("date")
+  const dateOverride = searchParams.get("date");
   const authHeader = req.headers.get("authorization");
 
   if (
@@ -48,53 +52,74 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const ymd = dateOverride ?? getYesterdayLondonYMD()
+  const ymd = dateOverride ?? getYesterdayLondonYMD();
 
-  // skip weekends (Sat/Sun)
-  if (isWeekendLondon(ymd)) {
+  if (isWeekend(ymd)) {
     return NextResponse.json({ ok: true, skipped: "WEEKOFF", date: ymd });
   }
 
   const date = londonDateAsUTCDateFromYMD(ymd);
 
-  // Get all employee users (adjust role enum string if yours differs)
   const employees = await prisma.user.findMany({
     where: { role: "EMPLOYEE" },
-    select: { id: true },
-  });
-
-  if (employees.length === 0) {
-    return NextResponse.json({ ok: true, created: 0, date: ymd });
-  }
-
-  // Find existing attendance records for that date (any status)
-  const existing = await prisma.attendance.findMany({
-    where: {
-      date,
-      userId: { in: employees.map((e) => e.id) },
+    select: {
+      id: true,
+      employee: { select: { employmentType: true } },
     },
-    select: { userId: true, status: true },
   });
 
-  const existingSet = new Set(existing.map((a) => a.userId));
+  const existing = await prisma.attendance.findMany({
+    where: { date, userId: { in: employees.map((e) => e.id) } },
+    select: { id: true, userId: true, checkIn: true, checkOut: true, status: true },
+  });
 
-  // Only create ABSENT for employees with NO record at all
-  const missing = employees.filter((e) => !existingSet.has(e.id));
+  const byUser = new Map(existing.map((a) => [a.userId, a]));
 
-  if (missing.length === 0) {
-    return NextResponse.json({ ok: true, created: 0, date: ymd });
+  // 1) Create ABSENT for missing users
+  const missing = employees.filter((e) => !byUser.has(e.id));
+
+  if (missing.length) {
+    await prisma.attendance.createMany({
+      data: missing.map((e) => ({
+        userId: e.id,
+        date,
+        status: "ABSENT",
+      })),
+      skipDuplicates: true,
+    });
   }
 
-  // Create ABSENT rows
-  await prisma.attendance.createMany({
-    data: missing.map((e) => ({
-      userId: e.id,
-      date,
-      status: "ABSENT",
-      // checkIn/checkOut null
-    })),
-    skipDuplicates: true,
-  });
+  // 2) Update completed records with hours + policy
+  const tx: any[] = [];
 
-  return NextResponse.json({ ok: true, created: missing.length, date: ymd });
+  for (const e of employees) {
+    const row = byUser.get(e.id);
+    if (!row) continue;
+    if (!row.checkIn || !row.checkOut) continue;
+
+    const worked = hoursBetween(new Date(row.checkIn), new Date(row.checkOut));
+    const workedRounded = Math.round(worked * 100) / 100;
+
+    const required = requiredHoursByType(e.employee?.employmentType);
+    const status = workedRounded >= required ? "PRESENT" : "HALF_DAY";
+
+    tx.push(
+      prisma.attendance.update({
+        where: { id: row.id },
+        data: {
+          workingHours: workedRounded,
+          status,
+        },
+      })
+    );
+  }
+
+  const updated = tx.length ? await prisma.$transaction(tx) : [];
+
+  return NextResponse.json({
+    ok: true,
+    date: ymd,
+    createdAbsent: missing.length,
+    updated: updated.length,
+  });
 }

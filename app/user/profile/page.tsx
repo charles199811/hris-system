@@ -5,67 +5,16 @@ import { AttendanceButton } from "@/components/shared/attendance-button";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { SalaryAndPaydayCard } from "./your-salary";
+import {
+  clamp,
+  monthName,
+  getMonthStats,
+  getPaydayInfo,
+} from "@/lib/user/date-utils";
 
 export const metadata: Metadata = {
   title: "Profile",
 };
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
-}
-
-function monthName(d: Date) {
-  return d.toLocaleString("en-GB", { month: "long" });
-}
-
-function getMonthStats(date = new Date()) {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  const first = new Date(year, month, 1);
-  const last = new Date(year, month + 1, 0);
-  const daysInMonth = last.getDate();
-
-  let weekends = 0;
-  let workDays = 0;
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const d = new Date(year, month, day);
-    const dow = d.getDay(); // 0 Sun ... 6 Sat
-    if (dow === 0 || dow === 6) weekends++;
-    else workDays++;
-  }
-
-  return { daysInMonth, workDays, weekends, holidays: 0 };
-}
-
-function getPaydayInfo(date = new Date(), paydayDay = 1) {
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  const thisMonthPayday = new Date(year, month, paydayDay);
-  const nextMonthPayday = new Date(year, month + 1, paydayDay);
-
-  const nextPayday =
-    date >= thisMonthPayday ? nextMonthPayday : thisMonthPayday;
-
-  const msPerDay = 1000 * 60 * 60 * 24;
-  const diff = nextPayday.getTime() - date.getTime();
-  const daysRemaining = Math.max(0, Math.ceil(diff / msPerDay));
-
-  const prevPayday =
-    date >= thisMonthPayday
-      ? thisMonthPayday
-      : new Date(year, month - 1, paydayDay);
-  const span = nextPayday.getTime() - prevPayday.getTime();
-  const elapsed = clamp(
-    ((date.getTime() - prevPayday.getTime()) / span) * 100,
-    0,
-    100,
-  );
-
-  return { nextPayday, daysRemaining, progressPct: Math.round(elapsed) };
-}
 
 function Bar({
   value,
@@ -85,7 +34,7 @@ function Bar({
         <span className="font-medium">{label}</span>
         {rightText ? <span className="text-slate-300">{rightText}</span> : null}
       </div>
-      <div className="h-12 w-full rounded-full bg-slate-700/60 p-2">
+      <div className="h-12 w-full rounded-full bg- p-2">
         <div
           className={`h-full rounded-full ${colorClass}`}
           style={{ width: `${v}%` }}
@@ -155,8 +104,6 @@ const Profile = async () => {
               Role: <span className="font-normal">{session?.user.role}</span>
             </p>
           </div>
-
-          
         </div>
 
         {/* Rest of dashboard */}
