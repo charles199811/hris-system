@@ -1,3 +1,4 @@
+import MainNav from "../user/main-nav";
 import Profile from "../user/profile/page";
 import { QuickActions } from "../user/profile/quick-actions";
 import { AttendanceCard } from "@/components/shared/attendance-card";
@@ -8,6 +9,7 @@ const Homepage = async () => {
       <AttendanceCard />
       <Profile />
       <QuickActions />
+      
     </div>
   );
 };

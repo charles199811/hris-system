@@ -1,19 +1,60 @@
-import Header from "@/components/shared/header"
-import Footer from "@/components/footer"
-import AnimatedBackground from "@/components/animate-background/animated-background"
+import { APP_NAME } from "@/lib/constants";
+import Image from "next/image";
+import Link from "next/link";
+import Menu from "@/components/shared/header/menu";
+// import MainNav from "./main-nav";
+import { Input } from "@/components/ui/input";
+import AdminSidebar from "@/components/admin/ui/admin-sidebar";
+// import AdminSearch from "@/components/admin/admin-search";
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <div className="relative isolate flex min-h-screen flex-col">
-      {/* MUST be near the top so it's behind everything */}
-      <AnimatedBackground />
-      <Header />
-      {/* make sure this doesn't paint white */}
-      <main className="flex-1 wrapper">{children}</main>
+    <div className="min-h-screen flex flex-col">
+      {/* Header */}
+      <div className="border-b">
+        <div className="container mx-auto">
+          <div className="flex items-center h-16 px-4">
+            <Link href="/" className="w-22">
+              <Image
+                src="/images/favicon.png"
+                height={148}
+                width={148}
+                alt={APP_NAME}
+              />
+            </Link>
 
-      <Footer />
+            {/* <MainNav className="mx-6" /> */}
+
+            <div className="ml-auto items-center flex space-x-4">
+              <Input
+                type="search"
+                placeholder="Search..."
+                className="md:w-[100px] lg:w-[300px]"
+              />
+              <Menu />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Body */}
+      <div className="flex-1">
+        <div className="container mx-auto flex gap-6">
+          {/* Sidebar */}
+          <aside className="hidden md:block w-64 border-r py-6">
+            <AdminSidebar />
+          </aside>
+
+          {/* Page content */}
+          <main className="flex-1 py-6">{children}</main>
+        </div>
+      </div>
     </div>
-  )
+  );
 }
+
+

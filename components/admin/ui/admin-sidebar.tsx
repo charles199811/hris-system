@@ -15,8 +15,8 @@ export default function Sidebar() {
 
   return (
     <div className="px-4">
-      <p className="text-xs font-semibold text-muted-foreground mb-3">
-        Admin Panel
+      <p className="text-base font-semibold text-muted-foreground mb-3">
+        Admin Dashboard
       </p>
 
       <nav className="flex flex-col gap-1">

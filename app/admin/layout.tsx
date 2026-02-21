@@ -4,7 +4,7 @@ import Link from "next/link";
 import Menu from "@/components/shared/header/menu";
 import MainNav from "./main-nav";
 import { Input } from "@/components/ui/input";
-import Sidebar from "@/components/sidebar";
+import Sidebar from "@/components/admin/ui/admin-sidebar";
 // import AdminSearch from "@/components/admin/admin-search";
 
 export default function AdminLayout({
