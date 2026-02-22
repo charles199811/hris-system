@@ -4,7 +4,7 @@ import Link from "next/link";
 import Menu from "@/components/shared/header/menu";
 // import MainNav from "./main-nav";
 import { Input } from "@/components/ui/input";
-import AdminSidebar from "@/components/admin/ui/admin-sidebar";
+import UserSidebar from "@/components/user-dashboard/users-sidebar";
 // import AdminSearch from "@/components/admin/admin-search";
 
 export default function RootLayout({
@@ -46,9 +46,8 @@ export default function RootLayout({
         <div className="container mx-auto flex gap-6">
           {/* Sidebar */}
           <aside className="hidden md:block w-64 border-r py-6">
-            <AdminSidebar />
+            <UserSidebar />
           </aside>
-
           {/* Page content */}
           <main className="flex-1 py-6">{children}</main>
         </div>
