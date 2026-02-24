@@ -94,17 +94,7 @@ const Profile = async () => {
   return (
     <SessionProvider session={session}>
       <div className="space-y-6">
-        {/* ✅ KEEP THIS CARD SAME (your current progress) */}
-        <div className="flex items-center justify-between rounded bg-blue-600 p-6 text-white ">
-          <div>
-            <h1 className="text-2xl font-serif">
-              Welcome, {session?.user.name}!
-            </h1>
-            <p className="mt-1 text-sm text-slate-300">
-              Role: <span className="font-normal">{session?.user.role}</span>
-            </p>
-          </div>
-        </div>
+       
 
         {/* Rest of dashboard */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -134,8 +124,8 @@ const Profile = async () => {
           </div>
           <SalaryAndPaydayCard />
           {/* Month data (middle) */}
-          <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
-            <h2 className="text-2xl font-semibold">Data of {monthName(now)}</h2>
+          <div className="lg:col-span-6 rounded-xl bg-blue-600  p-6 text-white shadow">
+            <h2 className="text-xl font-semibold">Data of {monthName(now)}</h2>
 
             <div className="mt-6 space-y-3 text-slate-200">
               <div className="flex items-center justify-between">
@@ -154,8 +144,8 @@ const Profile = async () => {
           </div>
 
           {/* Attendance (right wide) */}
-          <div className="lg:col-span-5 rounded-xl bg-blue-600  p-6 text-white shadow">
-            <h2 className="text-2xl font-semibold">
+          <div className="lg:col-span-6 rounded-xl bg-blue-600  p-6 text-white shadow">
+            <h2 className="text-xl font-semibold">
               Your Attendance This Month
             </h2>
 

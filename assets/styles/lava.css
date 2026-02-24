@@ -1,0 +1,52 @@
+/* 3D tilt base */
+.tilt-card {
+  background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.95), rgba(30,58,138,0.98));
+  transform-style: preserve-3d;
+  transition: transform 180ms ease;
+  will-change: transform;
+}
+
+/* smooth highlight that follows cursor */
+.tilt-highlight {
+  background:
+    radial-gradient(circle at var(--hx, 50%) var(--hy, 50%),
+      rgba(255,255,255,0.28),
+      rgba(255,255,255,0.08) 35%,
+      transparent 60%);
+  mix-blend-mode: screen;
+  opacity: 0.9;
+}
+
+/* Optional: make the content pop in 3D */
+.tilt-card > * {
+  transform: translateZ(20px);
+}
+
+/* Outer rim gives "thickness" */
+.tilt-rim {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.18) inset,
+    0 0 0 1px rgba(0,0,0,0.22);
+  opacity: 0.95;
+}
+
+/* Bevel gives a realistic raised edge */
+.tilt-bevel {
+  background:
+    radial-gradient(circle at var(--hx, 50%) var(--hy, 50%),
+      rgba(255,255,255,0.20),
+      transparent 55%),
+    linear-gradient(135deg,
+      rgba(255,255,255,0.22),
+      rgba(255,255,255,0.06) 35%,
+      rgba(0,0,0,0.10) 70%,
+      rgba(0,0,0,0.18));
+  /* keep the same mask + padding etc */
+}
+
+/* Stronger depth shadow like a physical card */
+.tilt-card {
+  box-shadow:
+    0 18px 45px rgba(0,0,0,0.22),
+    0 2px 0 rgba(255,255,255,0.08) inset;
+}

@@ -1,0 +1,88 @@
+"use client";
+
+import * as React from "react";
+
+export default function NameCardClient({
+  name,
+  role,
+}: {
+  name: string;
+  role: string;
+}) {
+  const cardRef = React.useRef<HTMLDivElement>(null);
+
+  function handleMove(e: React.MouseEvent<HTMLDivElement>) {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left; // mouse x in card
+    const y = e.clientY - rect.top; // mouse y in card
+
+    // normalize to -0.5 .. 0.5
+    const px = x / rect.width - 0.5;
+    const py = y / rect.height - 0.5;
+
+    // tilt strength
+    const max = 12; // degrees
+    const rotY = px * max; // left/right
+    const rotX = -py * max; // up/down (invert)
+    const scale = 1.02;
+
+    // nice highlight that follows cursor
+    const hx = (x / rect.width) * 100;
+    const hy = (y / rect.height) * 100;
+
+    el.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) scale(${scale})`;
+    el.style.setProperty("--hx", `${hx}%`);
+    el.style.setProperty("--hy", `${hy}%`);
+  }
+
+  function handleLeave() {
+    const el = cardRef.current;
+    if (!el) return;
+    el.style.transform =
+      "perspective(900px) rotateX(0deg) rotateY(0deg) scale(1)";
+    el.style.setProperty("--hx", `50%`);
+    el.style.setProperty("--hy", `50%`);
+  }
+
+  return (
+    <div className="relative">
+      <div
+        ref={cardRef}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        className="tilt-card relative overflow-hidden rounded-xl p-10 text-white shadow-lg"
+      >
+        {/* Content */}
+        <div className="relative z-10">
+          <p className="text-lg uppercase tracking-wide opacity-90">
+            HI {name}
+          </p>
+
+          <h1 className="mt-3 text-4xl md:text-5xl font-bold leading-tight">
+            Glad you&apos;re here
+          </h1>
+
+          <p className="mt-5 text-sm opacity-90">
+            Role: <span className="font-medium">{role}</span>
+          </p>
+        </div>
+
+        {/* Bottom lava strip (optional, keep if you want) */}
+        <div className="lava-container">
+          <div className="lava" />
+          <div className="lava-blur" />
+        </div>
+
+        {/* Cursor highlight + glass shine */}
+        <div className="tilt-highlight pointer-events-none absolute inset-0" />
+        <div className="tilt-rim pointer-events-none absolute inset-0 rounded-2xl" />
+
+        {/* bevel (inner edge) */}
+        <div className="tilt-bevel pointer-events-none absolute inset-0 rounded-2xl" />
+      </div>
+    </div>
+  );
+}
