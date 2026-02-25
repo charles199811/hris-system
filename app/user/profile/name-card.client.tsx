@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
+import Logo from "./logo";
 
 export default function NameCardClient({
   name,
@@ -48,15 +50,15 @@ export default function NameCardClient({
   }
 
   return (
-    <div className="relative">
+    <div className="">
       <div
         ref={cardRef}
         onMouseMove={handleMove}
         onMouseLeave={handleLeave}
-        className="tilt-card relative overflow-hidden rounded-xl p-10 text-white shadow-lg"
+        className="tilt-card relative overflow-hidden  flex-1 rounded-xl p-10 text-white shadow-lg"
       >
         {/* Content */}
-        <div className="relative z-10">
+        <div className="relative z-10 pr-[290px]">
           <p className="text-lg uppercase tracking-wide opacity-90">
             HI {name}
           </p>
@@ -82,6 +84,10 @@ export default function NameCardClient({
 
         {/* bevel (inner edge) */}
         <div className="tilt-bevel pointer-events-none absolute inset-0 rounded-2xl" />
+      </div>
+
+      <div>
+        <Logo />
       </div>
     </div>
   );

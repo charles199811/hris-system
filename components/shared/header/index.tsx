@@ -7,7 +7,7 @@ import Menu from "./menu";
 
 const Header = () => {
   return (
-    <header className="w-full border-b">
+    <header className="border-b bg-background px-6 py-4">
       <div className="wrapper flex-between">
         <div className="flex items-center ml-3">
           {/* <CategoryDrawer /> */}

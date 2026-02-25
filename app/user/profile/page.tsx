@@ -94,8 +94,6 @@ const Profile = async () => {
   return (
     <SessionProvider session={session}>
       <div className="space-y-6">
-       
-
         {/* Rest of dashboard */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Quote of the day (wide) */}
