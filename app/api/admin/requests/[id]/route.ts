@@ -1,29 +1,32 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/db/prisma";
 
 export async function PATCH(
-  req: Request,
-  { params }: { params: { id: string } }
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
 ) {
-  const body = await req.json();
+  try {
+    const { id } = await context.params; // ✅ await params
+    const body = await req.json();
 
-  const updated = await prisma.request.update({
-    where: { id: params.id },
-    data: {
-      status: body.status,
-    },
-  });
+    const updated = await prisma.request.update({
+      where: { id },
+      data: { status: body.status },
+    });
 
-  // Create notification for the employee
-  await prisma.notification.create({
-    data: {
-      userId: updated.userId,
-      title: "Request Status Updated",
-      message: `Your request "${updated.title}" is now ${updated.status}.`,
-      href: "/user/requests",
-    },
-  });
+    await prisma.notification.create({
+      data: {
+        userId: updated.userId,
+        title: "Request Status Updated",
+        message: `Your request status is now ${body.status}`,
+      },
+    });
 
-
-  return NextResponse.json(updated);
+    return NextResponse.json(updated);
+  } catch (e) {
+    return NextResponse.json(
+      { error: "Failed to update request" },
+      { status: 500 },
+    );
+  }
 }

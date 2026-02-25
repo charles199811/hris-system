@@ -4,15 +4,17 @@ import { auth } from "@/auth";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const {id} = await context.params;
+
   const updated = await prisma.notification.updateMany({
-    where: { id: params.id, userId: session.user.id },
+    where: { id, userId: session.user.id },
     data: { isRead: true },
   });
 
