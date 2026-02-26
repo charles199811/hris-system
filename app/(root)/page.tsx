@@ -19,9 +19,7 @@ const Homepage = async () => {
   return (
     <div className="space-y-6">
       <NameCard />
-      <div className="-mt-5">
-        <QuickActions />
-      </div>
+
       {/* push attendance down */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* LEFT COLUMN */}
@@ -34,8 +32,9 @@ const Homepage = async () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 space-y-6">
           <AttendanceCard />
+          <QuickActions />
         </div>
       </div>
 
