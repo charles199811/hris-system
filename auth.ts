@@ -50,6 +50,7 @@ export const config = {
               name: user.name,
               email: user.email,
               role: user.role,
+              dateOfBirth: user.dateOfBirth,
             };
           }
         }
@@ -76,7 +77,7 @@ export const config = {
       if (user) {
         token.role = user.role;
         token.name = user.name;
-        
+        token.dateOfBirth = user.dateOfBirth ?? null;
       }
 
       // optional: if you ever update the session name, keep token in sync
@@ -93,6 +94,7 @@ export const config = {
       session.user.id = token.sub;
       session.user.role = token.role;
       session.user.name = token.name;
+      session.user.dateOfBirth = (token as any).dateOfBirth ?? null;
 
       console.log(token);
       //If there is an update, set the user name

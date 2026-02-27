@@ -6,6 +6,8 @@ import { QuickActions } from "../user/profile/quick-actions";
 import { AttendanceCard } from "@/components/shared/attendance-card";
 import { FeedPostCard } from "@/components/shared/body/feed-post-card";
 
+import BirthdaysCarousel from "@/components/shared/body/birthdays-carousel";
+
 const Homepage = async () => {
   const posts = [
     {
@@ -15,6 +17,11 @@ const Homepage = async () => {
       createdAtLabel: "6 Feb 2026, 12:49",
       body: "Hi team 👋 Friendly reminder to please ensure all expenses are uploaded to the designated EoR platform...",
     },
+  ];
+  const birthdayUsers = [
+    { id: "1", name: "Salah", subtitle: "Today" },
+    { id: "2", name: "Ludo", subtitle: "Tomorrow" },
+    { id: "3", name: "Shena", subtitle: "6 Feb" },
   ];
   return (
     <div className="space-y-6">
@@ -29,6 +36,7 @@ const Homepage = async () => {
           {posts.map((p) => (
             <FeedPostCard key={p.id} post={p} />
           ))}
+           <BirthdaysCarousel users={birthdayUsers} />
         </div>
 
         {/* RIGHT COLUMN */}

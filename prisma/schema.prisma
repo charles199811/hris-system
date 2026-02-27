@@ -64,15 +64,15 @@ model User {
   role          UserRole  @default(USER)
   mfaEnabled    Boolean   @default(false)
   permissions   String[]  @default([])
+  dateOfBirth   DateTime? @db.Date
+  employee      Employee?
 
-  employee Employee?
-
-  sessions    Session[]
-  account     Account[]
-  attendances Attendance[]
-  requests    Request[]
+  sessions        Session[]
+  account         Account[]
+  attendances     Attendance[]
+  requests        Request[]
   requestActivity RequestActivity[]
-  notifications Notification[]
+  notifications   Notification[]
 
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt
@@ -290,41 +290,41 @@ model Request {
   status      RequestStatus @default(PENDING)
 
   // Optional structured fields
-  startDate   DateTime?     // leave
-  endDate     DateTime?     // leave
-  amount      Decimal?      @db.Decimal(10,2) // claim
-  currency    String?       // claim e.g. "GBP"
+  startDate DateTime? // leave
+  endDate   DateTime? // leave
+  amount    Decimal?  @db.Decimal(10, 2) // claim
+  currency  String? // claim e.g. "GBP"
 
-  userId      String        @db.Uuid
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  attachments Attachment[]  // receipts / docs
+  attachments Attachment[] // receipts / docs
   activities  RequestActivity[]
-  
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Attachment {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  requestId String   @db.Uuid
-  request   Request  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requestId String  @db.Uuid
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
-  fileName  String
-  fileUrl   String
-  fileType  String?
-  fileSize  Int?
+  fileName String
+  fileUrl  String
+  fileType String?
+  fileSize Int?
 
   createdAt DateTime @default(now())
 }
 
 model RequestActivity {
-  id        String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  requestId String        @db.Uuid
-  request   Request       @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  requestId String  @db.Uuid
+  request   Request @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
-  actorId   String        @db.Uuid
-  actor     User          @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId String @db.Uuid
+  actor   User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
 
   fromStatus RequestStatus?
   toStatus   RequestStatus?
@@ -334,14 +334,14 @@ model RequestActivity {
 }
 
 model Notification {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String   @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title     String
-  message   String
-  href      String?
-  isRead    Boolean  @default(false)
+  title   String
+  message String
+  href    String?
+  isRead  Boolean @default(false)
 
   createdAt DateTime @default(now())
 }

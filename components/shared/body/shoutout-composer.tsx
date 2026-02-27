@@ -9,7 +9,7 @@ import { Trophy, BarChart3 } from "lucide-react";
 
 export function ShoutoutComposer() {
   return (
-    <Card className="rounded-2xl shadow-sm">
+    <Card className="rounded-2xl shadow-sm border-b-8">
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">

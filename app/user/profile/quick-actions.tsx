@@ -20,20 +20,15 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <Card className="rounded-2xl border bg-white/70 p-4 shadow-sm backdrop-blur">
-      
+    <Card className="rounded-2xl border-b-8 bg-white/70 p-4 shadow-sm backdrop-blur">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 text-white">
           <Sparkles className="h-4 w-4" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-900">
-            Quick Actions
-          </p>
-          <p className="text-xs text-slate-500">
-            Jump into common tasks
-          </p>
+          <p className="text-sm font-semibold text-slate-900">Quick Actions</p>
+          <p className="text-xs text-slate-500">Jump into common tasks</p>
         </div>
       </div>
 
