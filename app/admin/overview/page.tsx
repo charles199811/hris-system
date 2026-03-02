@@ -8,12 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -24,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
+import { getTodayWorkforce } from "@/lib/attendance/getTodayWorkForce";
 // -----------------------------
 // Types (UI layer)
 // -----------------------------
@@ -37,7 +32,7 @@ type AttendanceRow = {
   country: string;
   checkInAt?: string; // ISO or formatted string
   checkOutAt?: string; // ISO or formatted string
-  productivityHours: number; // e.g. 7.5
+  workingHours: number; // e.g. 7.5
 };
 
 type NotActiveRow = {
@@ -103,62 +98,32 @@ function kpiValue(n: number) {
 
 export default async function OverviewPage() {
   // Phase 1 UI: mock data (replace with DB/API later)
-  const onlineToday: AttendanceRow[] = [
-    {
-      id: "1",
-      name: "Ayesha Khan",
-      role: "EMPLOYEE",
-      country: "Pakistan",
-      checkInAt: "09:02",
-      checkOutAt: undefined,
-      productivityHours: 6.8,
-    },
-    {
-      id: "2",
-      name: "Daniel Tan",
-      role: "HR",
-      country: "Malaysia",
-      checkInAt: "08:41",
-      checkOutAt: "17:12",
-      productivityHours: 8.5,
-    },
-    {
-      id: "3",
-      name: "Oliver Smith",
-      role: "MANAGER",
-      country: "United Kingdom",
-      checkInAt: "09:15",
-      checkOutAt: undefined,
-      productivityHours: 6.2,
-    },
-  ];
+  const data = await getTodayWorkforce();
 
-  const notActiveToday: NotActiveRow[] = [
-    {
-      id: "10",
-      name: "Siti Nur",
-      role: "EMPLOYEE",
-      country: "Indonesia",
-      reason: "On Leave",
-      leaveNote: "Annual Leave (10–11 Feb)",
-    },
-    {
-      id: "11",
-      name: "Hamza Ali",
-      role: "FINANCE",
-      country: "Pakistan",
+  const onlineToday: AttendanceRow[] = data.rows
+    .filter((r) => r.isOnline)
+    .map((r) => ({
+      id: r.id,
+      name: r.name as string,
+      role: r.role as Role,
+      country: r.country as string,
+      checkInAt: r.checkIn ?? "—",
+      checkOutAt: r.checkOut ?? undefined,
+      workingHours: r.workingHours ?? 0,
+    }));
+
+  const notActiveToday: NotActiveRow[] = data.rows
+    .filter((r) => !r.isOnline)
+    .map((r) => ({
+      id: r.id,
+      name: r.name as string,
+      role: r.role as Role,
+      country: r.country as string,
       reason: "No Check-in",
-    },
-    {
-      id: "12",
-      name: "Nattapong K.",
-      role: "EMPLOYEE",
-      country: "Thailand",
-      reason: "Public Holiday",
-      leaveNote: "Makha Bucha Day",
-    },
-  ];
+      leaveNote: undefined,
+    }));
 
+  // keep alerts as mock for now (or we make dynamic next)
   const alerts: AlertRow[] = [
     {
       id: "a1",
@@ -178,8 +143,8 @@ export default async function OverviewPage() {
     },
   ];
 
-  const onlineCount = onlineToday.length;
-  const notActiveCount = notActiveToday.length;
+  const onlineCount = data.onlineCount;
+  const notActiveCount = data.notActiveCount;
   const alertCount = alerts.length;
 
   return (
@@ -187,7 +152,9 @@ export default async function OverviewPage() {
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Admin Overview</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Admin Overview
+          </h1>
           <p className="text-sm text-muted-foreground">
             Attendance snapshot for today (online, not active, and alerts).
           </p>
@@ -248,10 +215,16 @@ export default async function OverviewPage() {
             <Tabs defaultValue="online" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="online">
-                  Online Today <span className="ml-2 text-xs text-muted-foreground">({onlineCount})</span>
+                  Online Today{" "}
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({onlineCount})
+                  </span>
                 </TabsTrigger>
                 <TabsTrigger value="not-active">
-                  Not Active <span className="ml-2 text-xs text-muted-foreground">({notActiveCount})</span>
+                  Not Active{" "}
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({notActiveCount})
+                  </span>
                 </TabsTrigger>
               </TabsList>
 
@@ -267,29 +240,42 @@ export default async function OverviewPage() {
                           <TableHead>Country</TableHead>
                           <TableHead>Check In</TableHead>
                           <TableHead>Check Out</TableHead>
-                          <TableHead className="text-right">Productivity</TableHead>
+                          <TableHead className="text-right">
+                            Productivity
+                          </TableHead>
                         </TableRow>
                       </TableHeader>
 
                       <TableBody>
                         {onlineToday.map((row) => (
                           <TableRow key={row.id}>
-                            <TableCell className="font-medium">{row.name}</TableCell>
+                            <TableCell className="font-medium">
+                              {row.name}
+                            </TableCell>
                             <TableCell>
-                              <Badge variant={roleBadgeVariant(row.role)}>{row.role}</Badge>
+                              <Badge variant={roleBadgeVariant(row.role)}>
+                                {row.role}
+                              </Badge>
                             </TableCell>
                             <TableCell>{row.country}</TableCell>
                             <TableCell>{row.checkInAt ?? "-"}</TableCell>
-                            <TableCell>{row.checkOutAt ?? <span className="text-muted-foreground">—</span>}</TableCell>
+                            <TableCell>
+                              {row.checkOutAt ?? (
+                                <span className="text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
                             <TableCell className="text-right font-semibold">
-                              {formatHours(row.productivityHours)}
+                              {formatHours(row.workingHours)}
                             </TableCell>
                           </TableRow>
                         ))}
 
                         {onlineToday.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                            <TableCell
+                              colSpan={6}
+                              className="py-10 text-center text-muted-foreground"
+                            >
                               No one is online yet today.
                             </TableCell>
                           </TableRow>
@@ -318,13 +304,20 @@ export default async function OverviewPage() {
                       <TableBody>
                         {notActiveToday.map((row) => (
                           <TableRow key={row.id}>
-                            <TableCell className="font-medium">{row.name}</TableCell>
+                            <TableCell className="font-medium">
+                              {row.name}
+                            </TableCell>
                             <TableCell>
-                              <Badge variant={roleBadgeVariant(row.role)}>{row.role}</Badge>
+                              <Badge variant={roleBadgeVariant(row.role)}>
+                                {row.role}
+                              </Badge>
                             </TableCell>
                             <TableCell>{row.country}</TableCell>
                             <TableCell>
-                              <Badge className={reasonBadgeClass(row.reason)} variant="secondary">
+                              <Badge
+                                className={reasonBadgeClass(row.reason)}
+                                variant="secondary"
+                              >
                                 {row.reason}
                               </Badge>
                             </TableCell>
@@ -336,7 +329,10 @@ export default async function OverviewPage() {
 
                         {notActiveToday.length === 0 && (
                           <TableRow>
-                            <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
+                            <TableCell
+                              colSpan={5}
+                              className="py-10 text-center text-muted-foreground"
+                            >
                               Everyone has checked in today.
                             </TableCell>
                           </TableRow>
@@ -354,7 +350,9 @@ export default async function OverviewPage() {
         <Card>
           <CardHeader>
             <CardTitle>Attendance Alerts</CardTitle>
-            <CardDescription>Employees missing check-in/out for 2+ days</CardDescription>
+            <CardDescription>
+              Employees missing check-in/out for 2+ days
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <Alert>
@@ -365,7 +363,8 @@ export default async function OverviewPage() {
                 </Badge>
               </AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
-                Only alert employees with no activity AND no approved leave/public holiday (we’ll enforce this in Phase 2).
+                Only alert employees with no activity AND no approved
+                leave/public holiday (we’ll enforce this in Phase 2).
               </AlertDescription>
             </Alert>
 
@@ -380,16 +379,29 @@ export default async function OverviewPage() {
                       <div className="min-w-0">
                         <p className="truncate font-medium">{a.name}</p>
                         <div className="mt-1 flex flex-wrap items-center gap-2">
-                          <Badge variant={roleBadgeVariant(a.role)}>{a.role}</Badge>
-                          <span className="text-xs text-muted-foreground">{a.country}</span>
+                          <Badge variant={roleBadgeVariant(a.role)}>
+                            {a.role}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground">
+                            {a.country}
+                          </span>
                         </div>
                         <p className="mt-2 text-xs text-muted-foreground">
-                          Last activity: <span className="font-medium">{a.lastActivity}</span> • Missing:{" "}
-                          <span className="font-medium">{a.daysMissing} days</span>
+                          Last activity:{" "}
+                          <span className="font-medium">{a.lastActivity}</span>{" "}
+                          • Missing:{" "}
+                          <span className="font-medium">
+                            {a.daysMissing} days
+                          </span>
                         </p>
                       </div>
 
-                      <Button asChild size="sm" variant="outline" className="shrink-0">
+                      <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                        className="shrink-0"
+                      >
                         <Link href={`/admin/users`}>View</Link>
                       </Button>
                     </div>
@@ -408,4 +420,7 @@ export default async function OverviewPage() {
       </div>
     </div>
   );
+}
+function getTodayWorkForce() {
+  throw new Error("Function not implemented.");
 }
