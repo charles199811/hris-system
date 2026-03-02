@@ -20,6 +20,10 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getTodayWorkforce } from "@/lib/attendance/getTodayWorkForce";
+import { getAttendanceAlerts } from "@/lib/attendance/getAttendanceAlert";
+
+
+
 // -----------------------------
 // Types (UI layer)
 // -----------------------------
@@ -122,30 +126,12 @@ export default async function OverviewPage() {
       reason: "No Check-in",
       leaveNote: undefined,
     }));
-
-  // keep alerts as mock for now (or we make dynamic next)
-  const alerts: AlertRow[] = [
-    {
-      id: "a1",
-      name: "Hamza Ali",
-      role: "FINANCE",
-      country: "Pakistan",
-      lastActivity: "2026-02-08",
-      daysMissing: 2,
-    },
-    {
-      id: "a2",
-      name: "Mei Ling",
-      role: "EMPLOYEE",
-      country: "Malaysia",
-      lastActivity: "2026-02-07",
-      daysMissing: 3,
-    },
-  ];
+  
+  const alerts = await getAttendanceAlerts({ windowDays: 7, minMissingDays: 2 });
+  const alertCount = alerts.length;
 
   const onlineCount = data.onlineCount;
   const notActiveCount = data.notActiveCount;
-  const alertCount = alerts.length;
 
   return (
     <div className="space-y-6">
@@ -364,7 +350,7 @@ export default async function OverviewPage() {
               </AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
                 Only alert employees with no activity AND no approved
-                leave/public holiday (we’ll enforce this in Phase 2).
+                leave/public holiday.
               </AlertDescription>
             </Alert>
 
@@ -379,7 +365,7 @@ export default async function OverviewPage() {
                       <div className="min-w-0">
                         <p className="truncate font-medium">{a.name}</p>
                         <div className="mt-1 flex flex-wrap items-center gap-2">
-                          <Badge variant={roleBadgeVariant(a.role)}>
+                          <Badge variant={roleBadgeVariant(a.role as Role)}>
                             {a.role}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
