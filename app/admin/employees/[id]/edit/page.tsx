@@ -17,10 +17,12 @@ import {
 export default async function EditEmployeePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
+
   const employee = await prisma.employee.findUnique({
-    where: { id: params.id },
+    where: { id },
     select: {
       id: true,
       fullName: true,
