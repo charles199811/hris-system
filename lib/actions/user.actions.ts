@@ -186,6 +186,7 @@ export async function updateUser(user: z.infer<typeof updateUserSchema>) {
       data: {
         name: user.name,
         role: user.role, //must be a enum role
+        country: user.country ?? null,
       },
     });
 

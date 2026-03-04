@@ -16,7 +16,7 @@ function diffHours(from?: Date | null, to?: Date | null) {
   const end = to ?? new Date();
   const ms = end.getTime() - from.getTime();
   if (ms <= 0) return 0;
-  return Math.round((ms / (1000 * 60 * 60)) * 10) / 10; // 1 decimal
+  return Math.round((ms / (1000 * 60 * 60)) * 10) / 10;
 }
 
 export type TodayWorkforceRow = {
@@ -34,24 +34,19 @@ export async function getTodayWorkforce() {
   const from = startOfTodayUTC();
   const to = startOfTomorrowUTC();
 
-  // Pull all users (or only active employees) + today attendance if exists
   const users = await prisma.user.findMany({
     where: {
-      // if you have isActive:
       // isActive: true,
     },
     select: {
       id: true,
       name: true,
       role: true,
-      employee: {
-        select: {
-          country: true, // change to your real field
-        },
-      },
+      country: true, // ✅ get from User now
+
       attendances: {
         where: {
-          date: { gte: from, lt: to }, // use your field name (date/createdAt)
+          date: { gte: from, lt: to },
         },
         orderBy: { date: "desc" },
         take: 1,
@@ -67,25 +62,18 @@ export async function getTodayWorkforce() {
 
   const rows: TodayWorkforceRow[] = users.map((u) => {
     const a = u.attendances[0] ?? null;
-
-    const isOnline = !!a?.checkIn && !a?.checkOut; // online = checked in, not checked out
+    const isOnline = !!a?.checkIn && !a?.checkOut;
 
     return {
       id: u.id,
       name: u.name ?? "—",
       role: u.role,
-      country: u.employee?.country ?? null,
+      country: u.country ?? null, // ✅ map from user.country
       checkIn: a?.checkIn
-        ? new Date(a.checkIn).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
+        ? new Date(a.checkIn).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         : null,
       checkOut: a?.checkOut
-        ? new Date(a.checkOut).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })
+        ? new Date(a.checkOut).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         : null,
       workingHours: diffHours(a?.checkIn ?? null, a?.checkOut ?? null),
       isOnline,
@@ -93,7 +81,7 @@ export async function getTodayWorkforce() {
   });
 
   const online = rows.filter((r) => r.isOnline);
-  const notActive = rows.filter((r) => !r.isOnline); // adjust if you want "no check-in today" only
+  const notActive = rows.filter((r) => !r.isOnline);
 
   return {
     onlineCount: online.length,

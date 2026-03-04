@@ -26,6 +26,8 @@ export function formatDate(iso: string) {
   }
 }
 
+
+
 export function typeLabel(t: RequestType) {
   if (t === "LEAVE") return "Leave Request";
   if (t === "CLAIM") return "Claim / Reimbursement";

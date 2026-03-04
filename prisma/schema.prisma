@@ -8,6 +8,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Country {
+  UNITED_KINGDOM
+  PAKISTAN
+  MALAYSIA
+  INDIA
+  SRI_LANKA
+  BANGLADESH
+  USA
+  CANADA
+  AUSTRALIA
+}
+
 enum RequestType {
   LEAVE
   CLAIM
@@ -66,6 +84,7 @@ model User {
   permissions   String[]  @default([])
   dateOfBirth   DateTime? @db.Date
   employee      Employee?
+  country       Country?
 
   sessions        Session[]
   account         Account[]
@@ -123,14 +142,14 @@ model VerificationToken {
 model Employee {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  fullName String
-  email    String @unique(map: "employee_email_idx")
-  country  String?  
+  fullName          String
+  email             String   @unique(map: "employee_email_idx")
+  country           Country?
   // allow “draft profile” creation
   nationalId        String?
   phoneNo           String?
-  gender            String?
-  address           Json?   @db.Json
+  gender            Gender?
+  address           Json?
   bankAccountNumber String?
 
   // defaults so creation works immediately on "View"

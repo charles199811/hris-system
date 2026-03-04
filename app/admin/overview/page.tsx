@@ -22,8 +22,6 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { getTodayWorkforce } from "@/lib/attendance/getTodayWorkForce";
 import { getAttendanceAlerts } from "@/lib/attendance/getAttendanceAlert";
 
-
-
 // -----------------------------
 // Types (UI layer)
 // -----------------------------
@@ -126,8 +124,11 @@ export default async function OverviewPage() {
       reason: "No Check-in",
       leaveNote: undefined,
     }));
-  
-  const alerts = await getAttendanceAlerts({ windowDays: 7, minMissingDays: 2 });
+
+  const alerts = await getAttendanceAlerts({
+    windowDays: 7,
+    minMissingDays: 2,
+  });
   const alertCount = alerts.length;
 
   const onlineCount = data.onlineCount;
@@ -243,7 +244,7 @@ export default async function OverviewPage() {
                                 {row.role}
                               </Badge>
                             </TableCell>
-                            <TableCell>{row.country}</TableCell>
+                            <TableCell>{row.country ?? "-"}</TableCell>
                             <TableCell>{row.checkInAt ?? "-"}</TableCell>
                             <TableCell>
                               {row.checkOutAt ?? (
@@ -344,9 +345,20 @@ export default async function OverviewPage() {
             <Alert>
               <AlertTitle className="flex items-center justify-between">
                 <span>Action needed</span>
-                <Badge variant={alertCount > 0 ? "destructive" : "secondary"}>
-                  {alertCount}
-                </Badge>
+                <div className="text-3xl font-semibold">
+                  {kpiValue(alertCount)}
+                </div>
+
+                <div
+                  className={
+                    "rounded-full px-3 py-1 text-xs font-semibold " +
+                    (alertCount > 0
+                      ? "bg-red-100 text-red-700"
+                      : "bg-green-100 text-green-700")
+                  }
+                >
+                  {alertCount > 0 ? "Action needed" : "All good"}
+                </div>
               </AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
                 Only alert employees with no activity AND no approved
@@ -376,8 +388,14 @@ export default async function OverviewPage() {
                           Last activity:{" "}
                           <span className="font-medium">{a.lastActivity}</span>{" "}
                           • Missing:{" "}
-                          <span className="font-medium">
-                            {a.daysMissing} days
+                          <span
+                            className={
+                              a.daysMissing >= 3
+                                ? "font-semibold text-red-700"
+                                : "font-medium"
+                            }
+                          >
+                            {a.daysMissing} day{a.daysMissing === 1 ? "" : "s"}
                           </span>
                         </p>
                       </div>
@@ -388,7 +406,9 @@ export default async function OverviewPage() {
                         variant="outline"
                         className="shrink-0"
                       >
-                        <Link href={`/admin/users`}>View</Link>
+                        <Link href={`/admin/employees?userId=${a.id}`}>
+                          View Employee
+                        </Link>
                       </Button>
                     </div>
                   ))}

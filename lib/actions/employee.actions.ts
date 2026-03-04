@@ -2,6 +2,8 @@
 
 import { prisma } from "@/db/prisma"
 import { redirect } from "next/navigation"
+import { revalidatePath } from "next/cache"
+
 
 export async function getUsersWithEmployeeRole() {
   const users = await prisma.user.findMany({
@@ -76,4 +78,22 @@ export async function ensureEmployeeAndRedirect(formData: FormData) {
 
   // once ensured, take them to the edit page where they fill the rest
   redirect(`/admin/employees/${employee.id}/edit`)
+}
+
+export async function toggleEmployeeStatus(formData: FormData) {
+  const userId = String(formData.get("userId"));
+
+  const employee = await prisma.employee.findUnique({
+    where: { userId },
+    select: { id: true, isActive: true },
+  });
+
+  if (!employee) return;
+
+  await prisma.employee.update({
+    where: { id: employee.id },
+    data: { isActive: !employee.isActive },
+  });
+
+  revalidatePath("/admin/employees/employees-with-role");
 }

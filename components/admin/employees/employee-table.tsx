@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ensureEmployeeAndRedirect } from "@/lib/actions/employee.actions";
+import { ensureEmployeeAndRedirect, toggleEmployeeStatus } from "@/lib/actions/employee.actions";
 
 type EmployeeRow = {
   id: string; // row key (employeeId or userId)
@@ -105,21 +105,27 @@ export default function EmployeeTable({ employees }: Props) {
                 <TableCell>{formatDate(e.contractEndDate ?? null)}</TableCell>
 
                 <TableCell className="text-right">
-                  <form action={ensureEmployeeAndRedirect}>
-                    <input type="hidden" name="userId" value={e.userId} />
+                  <div className="flex justify-end gap-2">
+                    {/* Toggle Active */}
+                    <form action={toggleEmployeeStatus}>
+                      <input type="hidden" name="userId" value={e.userId} />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant={e.isActive ? "destructive" : "secondary"}
+                      >
+                        {e.isActive ? "Deactivate" : "Activate"}
+                      </Button>
+                    </form>
 
-                    <Button
-                      type="submit"
-                      size="sm"
-                      className={
-                        e.isActive
-                          ? "bg-white text-black hover:bg-gray-200"
-                          : "bg-red-600 text-white hover:bg-red-700"
-                      }
-                    >
-                      {e.isActive ? "Active" : "Inactive"}
-                    </Button>
-                  </form>
+                    {/* Edit */}
+                    <form action={ensureEmployeeAndRedirect}>
+                      <input type="hidden" name="userId" value={e.userId} />
+                      <Button type="submit" size="sm" variant="outline">
+                        Edit
+                      </Button>
+                    </form>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

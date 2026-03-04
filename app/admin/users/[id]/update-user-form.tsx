@@ -22,7 +22,7 @@ import { updateUser } from "@/lib/actions/user.actions";
 import { USER_ROLES } from "@/lib/constants";
 import { updateUserSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UserRole } from "@prisma/client";
+import { UserRole, Country } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { ControllerRenderProps, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -155,6 +155,41 @@ const UpdateUserForm = ({
                     ))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="country"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Country</FormLabel>
+
+                <Select
+                  onValueChange={(value) =>
+                    field.onChange(value === "NONE" ? null : (value as Country))
+                  }
+                  value={field.value ?? "NONE"}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a country" />
+                    </SelectTrigger>
+                  </FormControl>
+
+                  <SelectContent>
+                    {/* Allow clearing */}
+                    <SelectItem value="NONE">None</SelectItem>
+
+                    {Object.values(Country).map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c.replaceAll("_", " ")}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <FormMessage />
               </FormItem>
             )}
