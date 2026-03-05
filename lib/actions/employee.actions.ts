@@ -1,9 +1,9 @@
-"use server"
+"use server";
 
-import { prisma } from "@/db/prisma"
-import { redirect } from "next/navigation"
-import { revalidatePath } from "next/cache"
-
+import { prisma } from "@/db/prisma";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
+import { DepartmentName } from "@prisma/client";
 
 export async function getUsersWithEmployeeRole() {
   const users = await prisma.user.findMany({
@@ -33,51 +33,61 @@ export async function getUsersWithEmployeeRole() {
         },
       },
     },
-  })
+  });
 
-  return users
+  return users;
 }
-
-
-
 function safeFullName(name: string | null | undefined, email: string) {
-  if (name && name.trim().length > 0) return name.trim()
-  return email.split("@")[0] ?? "Employee"
+  if (name && name.trim().length > 0) return name.trim();
+  return email.split("@")[0] ?? "Employee";
 }
 
 export async function ensureEmployeeAndRedirect(formData: FormData) {
-  const userId = String(formData.get("userId") ?? "")
-  if (!userId) throw new Error("Missing userId")
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) throw new Error("Missing userId");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, name: true, email: true, role: true },
-  })
-  if (!user) throw new Error("User not found")
-  if (user.role !== "EMPLOYEE") throw new Error("This user is not an EMPLOYEE")
+  });
+  if (!user) throw new Error("User not found");
+  if (user.role !== "EMPLOYEE") throw new Error("This user is not an EMPLOYEE");
+
+  const defaultDept = await prisma.department.upsert({
+    where: { departmentName: DepartmentName.ADMINISTRATION }, // ✅ if enum
+    update: {},
+    create: { departmentName: DepartmentName.ADMINISTRATION },
+    select: { id: true },
+  });
+
+  if (!defaultDept) {
+    throw new Error(
+      "Default department not found. Create/seed Department 'ADMINISTRATION' first.",
+    );
+  }
 
   const employee = await prisma.employee.upsert({
     where: { userId: user.id }, // unique key in your schema
     update: {
       // keep these always in sync with the User record
-      email: user.email,
-      fullName: safeFullName(user.name, user.email),
+      fullName: user.name ?? "",
+      email: user.email ?? "",
     },
     create: {
       userId: user.id,
       email: user.email,
       fullName: safeFullName(user.name, user.email),
-
+      departmentId: defaultDept.id,
       // hireDate + currency defaults come from schema now
       // hireDate: new Date(),
       // currency: "GBP",
       isActive: true,
     },
     select: { id: true },
-  })
+  });
 
   // once ensured, take them to the edit page where they fill the rest
-  redirect(`/admin/employees/${employee.id}/edit`)
+  redirect(`/admin/employees/${employee.id}/edit`);
 }
 
 export async function toggleEmployeeStatus(formData: FormData) {

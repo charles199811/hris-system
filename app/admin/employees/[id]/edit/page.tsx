@@ -1,7 +1,7 @@
 import { prisma } from "@/db/prisma";
 import { notFound } from "next/navigation";
 import { updateEmployeeProfile } from "@/lib/actions/employee-profile.actions";
-import { Country, Gender } from "@prisma/client";
+import {  Country, Gender, Department } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DepartmentSelect from "./department-select";
 
 export default async function EditEmployeePage({
   params,
@@ -31,15 +32,21 @@ export default async function EditEmployeePage({
       nationalId: true,
       gender: true,
       address: true,
-      department: { select: { departmentName: true } },
+      departmentId: true,
+      department: { select: { id: true, departmentName: true } },
       branch: { select: { branchName: true } },
-
       // ✅ get country from User
       user: { select: { country: true } },
     },
   });
 
   if (!employee) return notFound();
+
+   const departments = await prisma.department.findMany({
+    orderBy: { departmentName: "asc" },
+    select: { id: true, departmentName: true },
+  });
+
 
   return (
     <div className="space-y-6">
@@ -83,7 +90,15 @@ export default async function EditEmployeePage({
             className="grid gap-4 md:grid-cols-2"
           >
             <input type="hidden" name="id" value={employee.id} />
-
+            {/* ✅ Department select */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Department</label>
+              <DepartmentSelect
+                name="departmentId"
+                defaultValue={employee.departmentId ?? ""}
+                departments={departments}
+              />
+            </div>
             {/* Country enum */}
             {/* Country (from User) - read-only */}
             <div className="space-y-2">

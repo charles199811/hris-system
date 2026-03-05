@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -13,8 +14,20 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
+    
     <div className="px-4">
-      <p className="text-base font-semibold text-muted-foreground mb-3">
+      <div className="px-4 py-1 border-b">
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/images/favicon.png"   // use your logo path
+            alt="Intelura"
+            width={120}
+            height={30}
+            className="object-contain"
+          />
+        </Link>
+      </div>
+      <p className="text-base font-semibold text-muted-foreground mb-3 mt-3">
         Dashboard
       </p>
 

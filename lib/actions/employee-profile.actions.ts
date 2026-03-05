@@ -29,6 +29,9 @@ export async function updateEmployeeProfile(formData: FormData) {
   const country = countryRaw ? (countryRaw as Country) : null;
   const gender = genderRaw ? (genderRaw as Gender) : null;
 
+  const departmentId = String(formData.get("departmentId") || "");
+  if (!departmentId) throw new Error("Department is required");
+
   await prisma.employee.update({
     where: { id },
     data: {
@@ -37,6 +40,7 @@ export async function updateEmployeeProfile(formData: FormData) {
       phoneNo,
       gender,
       address,
+      department: { connect: { id: departmentId } }, 
     },
   });
 

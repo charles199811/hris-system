@@ -1,18 +1,22 @@
-
-import { PrismaClient } from "@prisma/client";
-import sampleData from "./sample-data";
+import { prisma } from "./prisma";
+import { DepartmentName } from "@prisma/client";
 
 async function main() {
-  const prisma = new PrismaClient();
-  await prisma.account.deleteMany();
-  await prisma.session.deleteMany();
-  await prisma.verificationToken.deleteMany();
-  await prisma.user.deleteMany();
+  for (const departmentName of Object.values(DepartmentName)) {
+    await prisma.department.upsert({
+      where: { departmentName },
+      update: {},
+      create: { departmentName },
+    });
+  }
 
-  // await prisma.user.createMany({ data: sampleData.users });
-
-  console.log("Database seeded")
-  
+  console.log("✅ Departments seeded");
 }
 
-main();
+main()
+  .then(() => prisma.$disconnect())
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

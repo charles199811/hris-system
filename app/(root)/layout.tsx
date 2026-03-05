@@ -34,11 +34,11 @@ export default function RootLayout({
       <div className="flex-1">
         <div className="container mx-auto flex gap-6">
           {/* Sidebar */}
-          <aside className="hidden md:block w-64 border-r py-6">
+          <aside className="hidden md:block w-40 border-r py-5">
             <UserSidebar />
           </aside>
           {/* Page content */}
-          <main className="flex-1 py-6">{children}</main>
+          <main className="flex-1 py-5">{children}</main>
         </div>
       </div>
     </div>

@@ -8,9 +8,11 @@ import { compareSync } from "bcrypt-ts-edge";
 import { UserRole } from "@prisma/client";
 
 const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "intelura.com";
-const ALLOWED_ROLES = new Set<UserRole>([UserRole.ADMIN, UserRole.ANALYST]);
+const ALLOWED_ROLES = new Set<UserRole>([UserRole.ADMIN, UserRole.HR]);
 
 export const config = {
+  secret: process.env.AUTH_SECRET,
+
   pages: {
     signIn: "/sign-in",
     error: "/sign-in",
@@ -91,15 +93,15 @@ export const config = {
     //Expose token fields into session
     async session({ session, user, trigger, token }: any) {
       //set user id from token
-      session.user.id = token.sub;
+      session.user.id = (token.sub ?? "") as string;
       session.user.role = token.role;
       session.user.name = token.name;
       session.user.dateOfBirth = (token as any).dateOfBirth ?? null;
 
       console.log(token);
       //If there is an update, set the user name
-      if (trigger === "update") {
-        session.user.name = user.name;
+      if (trigger === "update" && session?.user?.name) {
+        session.user.name = session.user.name;
       }
 
       return session;
