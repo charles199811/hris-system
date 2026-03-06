@@ -50,7 +50,7 @@ export default function NameCardClient({
   }
 
   return (
-    <div className="relative right-0 w-[1060px]">
+    <div className="relative flex flex-col w-full">
       <div
         ref={cardRef}
         onMouseMove={handleMove}
