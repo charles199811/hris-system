@@ -14,6 +14,13 @@ import { deleteDepartment } from "@/lib/actions/department.actions";
 
 export default async function DepartmentsPage() {
   const departments = await prisma.department.findMany({
+    include: {
+      depManager: {
+        select: {
+          fullName: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 
@@ -32,6 +39,7 @@ export default async function DepartmentsPage() {
             <TableRow>
               <TableHead>Department Name</TableHead>
               <TableHead>Created Date</TableHead>
+              <TableHead>Department Manager</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -42,6 +50,9 @@ export default async function DepartmentsPage() {
                 <TableCell>{item.departmentName}</TableCell>
                 <TableCell>
                   {new Date(item.createdAt).toLocaleDateString()}
+                </TableCell>
+                <TableCell>
+                  {item.depManager?.fullName ?? "No manager assigned"}
                 </TableCell>
                 <TableCell className="text-right space-x-2">
                   <Link href={`/admin/departments/${item.id}/edit`}>
@@ -67,7 +78,7 @@ export default async function DepartmentsPage() {
 
             {departments.length === 0 && (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
+                <TableCell colSpan={4} className="text-center">
                   No departments found
                 </TableCell>
               </TableRow>

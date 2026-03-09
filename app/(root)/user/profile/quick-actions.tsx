@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   CalendarDays,
   MessageSquareText,
@@ -18,9 +19,18 @@ const actions = [
   { title: "Support", href: "/user/requests", Icon: MessageSquareText },
 ];
 
-export function QuickActions() {
+type QuickActionsProps = {
+  className?: string;
+};
+
+export function QuickActions({ className }: QuickActionsProps) {
   return (
-    <Card className="rounded-2xl border-b-8 bg-white/70 p-4 shadow-sm backdrop-blur">
+    <Card
+      className={cn(
+        "rounded-2xl border-b-8 bg-white/70 p-4 shadow-sm backdrop-blur",
+        className
+      )}
+    >
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-600 to-blue-400 text-white">

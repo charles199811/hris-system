@@ -2,7 +2,6 @@ import ShoutoutComposer from "@/components/shared/body/feed/shoutout-composer";
 import MainNav from "./user/main-nav";
 import NameCard from "./user/profile/name-card";
 import Profile from "./user/profile/page";
-import { QuickActions } from "./user/profile/quick-actions";
 import { AttendanceCard } from "@/components/shared/attendance-card";
 import { FeedPostCard } from "@/components/shared/body/feed-post-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -42,7 +41,6 @@ const Homepage = async () => {
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-4 space-y-6">
           <AttendanceCard />
-          <QuickActions />
         </div>
       </div>
 

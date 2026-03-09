@@ -18,10 +18,20 @@ export default async function EditDepartmentPage({
       id: true,
       departmentName: true,
       createdAt: true,
+      depManagerId: true,
     },
   });
 
   if (!department) return notFound();
+
+  const employees = await prisma.employee.findMany({
+    orderBy: { fullName: "asc" },
+    select: {
+      id: true,
+      fullName: true,
+      email: true,
+    },
+  });
 
   return (
     <Card className="max-w-xl">
@@ -39,6 +49,22 @@ export default async function EditDepartmentPage({
               defaultValue={department.departmentName}
               placeholder="Enter department name"
             />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Department Manager</label>
+            <select
+              name="depManagerId"
+              defaultValue={department.depManagerId ?? ""}
+              className="w-full rounded-md border px-3 py-2 text-sm"
+            >
+              <option value="">No manager assigned</option>
+              {employees.map((employee) => (
+                <option key={employee.id} value={employee.id}>
+                  {employee.fullName} {employee.email ? `- ${employee.email}` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
           <Button type="submit">Save changes</Button>

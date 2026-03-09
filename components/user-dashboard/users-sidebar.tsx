@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { QuickActions } from "@/app/(root)/user/profile/quick-actions";
 
 const links = [
   { title: "Overview", href: "" },
@@ -12,9 +13,9 @@ const links = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const overviewLink = links[0];
 
   return (
-    
     <div className="px-4">
       <div className="px-4 py-1 border-b">
         <Link href="/" className="flex items-center gap-2">
@@ -32,7 +33,7 @@ export default function Sidebar() {
       </p>
 
       <nav className="flex flex-col gap-1">
-        {links.map((item) => {
+        {[overviewLink].map((item) => {
           const active = pathname.startsWith(item.href);
 
           return (
@@ -50,6 +51,8 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        <QuickActions className="mt-3" />
       </nav>
     </div>
   );

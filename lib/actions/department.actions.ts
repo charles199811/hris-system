@@ -11,7 +11,7 @@ export async function createDepartment(formData: FormData) {
     throw new Error("Department name is required");
   }
 
-  const exists = await prisma.department.findUnique({
+  const exists = await prisma.department.findFirst({
     where: { departmentName },
   });
 
@@ -28,16 +28,13 @@ export async function createDepartment(formData: FormData) {
 }
 
 export async function updateDepartment(formData: FormData) {
-  const id = String(formData.get("id") || "").trim();
+  const id = String(formData.get("id") || "");
   const departmentName = String(formData.get("departmentName") || "").trim();
+  const depManagerIdRaw = String(formData.get("depManagerId") || "").trim();
+  const depManagerId = depManagerIdRaw || null;
 
-  if (!id) {
-    throw new Error("Department id is required");
-  }
-
-  if (!departmentName) {
-    throw new Error("Department name is required");
-  }
+  if (!id) throw new Error("Department id is required");
+  if (!departmentName) throw new Error("Department name is required");
 
   const existing = await prisma.department.findFirst({
     where: {
@@ -47,16 +44,28 @@ export async function updateDepartment(formData: FormData) {
   });
 
   if (existing) {
-    throw new Error("Another department with this name already exists");
+    throw new Error("Department already exists");
+  }
+
+  if (depManagerId) {
+    const manager = await prisma.employee.findUnique({
+      where: { id: depManagerId },
+    });
+
+    if (!manager) {
+      throw new Error("Selected manager does not exist");
+    }
   }
 
   await prisma.department.update({
     where: { id },
-    data: { departmentName },
+    data: {
+      departmentName,
+      depManagerId,
+    },
   });
 
   revalidatePath("/admin/departments");
-  revalidatePath(`/admin/departments/${id}/edit`);
   redirect("/admin/departments");
 }
 
