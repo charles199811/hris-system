@@ -44,6 +44,34 @@ enum RequestStatus {
   REJECTED
 }
 
+enum LeaveRequestType {
+  PAID_VACATION_LEAVE
+  SICK_LEAVE
+  URGENT_LEAVE
+  MATERNITY_LEAVE
+  PATERNITY_LEAVE
+  BEREAVEMENT_LEAVE
+  UNPAID_LEAVE
+  MENTAL_WELLNESS_DAY
+}
+
+enum ClaimPurpose {
+  TEAM_MEAL_OR_COFFEE
+  EMPLOYEE_ENGAGEMENT_WINNER
+  BEST_EMPLOYEE_RECOGNITION
+  BIRTHDAY_VOUCHER
+  TRANSPORT
+  OFFICE_SUPPLIES
+  TRAINING_CERTIFICATION_COURSES
+  OTHER
+}
+
+enum RequestAttachmentType {
+  GENERAL
+  MANAGER_APPROVAL
+  CLAIM_RECEIPT
+}
+
 enum EmploymentType {
   FULL_TIME
   PART_TIME
@@ -183,6 +211,7 @@ model Employee {
 
   managesBranch     Branch?     @relation("BranchManager")
   departmentManager Department? @relation("DepartmentManager")
+  managedRequests   Request[]   @relation("RequestManager")
 
   positionId String?   @db.Uuid
   position   Position? @relation(fields: [positionId], references: [id])
@@ -316,10 +345,19 @@ model Request {
   status      RequestStatus @default(PENDING)
 
   // Optional structured fields
-  startDate DateTime? // leave
-  endDate   DateTime? // leave
-  amount    Decimal?  @db.Decimal(10, 2) // claim
-  currency  String? // claim e.g. "GBP"
+  leaveType         LeaveRequestType? // leave
+  startDate         DateTime?         // leave
+  endDate           DateTime?         // leave
+  claimPurpose      ClaimPurpose?     // claim
+  claimPurposeOther String?
+  expenseDate       DateTime?         // claim
+  managerEmployeeId String?           @db.Uuid
+  managerEmployee   Employee?         @relation("RequestManager", fields: [managerEmployeeId], references: [id], onDelete: SetNull)
+  bankName          String?
+  accountNumber     String?
+  ibanSwift         String?
+  amount            Decimal?          @db.Decimal(10, 2) // claim
+  currency          String? // claim e.g. "GBP"
 
   userId String @db.Uuid
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -329,6 +367,10 @@ model Request {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([leaveType])
+  @@index([claimPurpose])
+  @@index([managerEmployeeId])
 }
 
 model Attachment {
@@ -340,6 +382,7 @@ model Attachment {
   fileUrl  String
   fileType String?
   fileSize Int?
+  attachmentType RequestAttachmentType @default(GENERAL)
 
   createdAt DateTime @default(now())
 }
