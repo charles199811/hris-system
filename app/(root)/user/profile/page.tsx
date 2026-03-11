@@ -94,8 +94,6 @@ const Profile = async () => {
 
   const latePct = clamp(attendanceThisMonth.lateHours * 6, 0, 100);
 
-  
-
   const birthdays = [
     { id: "b1", name: "John", subtitle: "Today" },
     { id: "b2", name: "Maria", subtitle: "Tomorrow" },
@@ -107,8 +105,6 @@ const Profile = async () => {
       <div className="space-y-6 ">
         {/* Rest of dashboard */}
         <div className="grid grid-cols- gap-6 lg:grid-cols-12">
-          
-
           {/* ✅ Intelurapedia (right - ABOVE salary) */}
           {/* <div className="lg:col-span-3 rounded-xl bg-blue-600  p-6 text-white shadow">
             <h2 className="text-2xl font-serif">Intelurapedia</h2>

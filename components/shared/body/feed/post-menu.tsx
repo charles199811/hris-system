@@ -1,8 +1,9 @@
 "use client";
 
+import { MoreVertical } from "lucide-react";
+import { useTransition } from "react";
 import { deletePost } from "@/lib/actions/feed.actions";
 import { Button } from "@/components/ui/button";
-import { useTransition } from "react";
 
 export default function PostMenu({ postId }: { postId: string }) {
   const [pending, startTransition] = useTransition();
@@ -11,10 +12,15 @@ export default function PostMenu({ postId }: { postId: string }) {
     <Button
       type="button"
       variant="ghost"
+      size="icon"
       disabled={pending}
-      onClick={() => startTransition(async () => { await deletePost(postId); })}
+      onClick={() =>
+        startTransition(async () => {
+          await deletePost(postId);
+        })
+      }
     >
-      ⋮
+      <MoreVertical className="h-4 w-4" />
     </Button>
   );
 }

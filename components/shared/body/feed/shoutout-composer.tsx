@@ -23,7 +23,13 @@ function Msg({ state }: { state: { success: boolean; message: string } }) {
   );
 }
 
-export default function ShoutoutComposer() {
+export default function ShoutoutComposer({
+  canCreate,
+}: {
+  canCreate: boolean;
+}) {
+  if (!canCreate) return null;
+
   // SHOUTOUT form
   const [state, action] = useActionState(createFeedPost, {
     success: false,

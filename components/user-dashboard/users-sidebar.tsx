@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { QuickActions } from "@/app/(root)/user/profile/quick-actions";
+import { QuickActionsCompact } from "@/app/(root)/user/profile/quick-actions";
 
 const links = [
-  { title: "Overview", href: "" },
+  { title: "Overview", href: "/" },
   // { title: "", href: "" },
 ];
 
@@ -28,20 +28,21 @@ export default function Sidebar() {
           />
         </Link>
       </div>
-      <p className="text-base font-semibold text-muted-foreground mb-3 mt-3">
+      <p className="mb-3 mt-3 text-center text-base font-semibold text-muted-foreground">
         Dashboard
       </p>
 
       <nav className="flex flex-col gap-1">
         {[overviewLink].map((item) => {
-          const active = pathname.startsWith(item.href);
+          const active =
+            item.href === "/" ? pathname === item.href : pathname.startsWith(item.href);
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "rounded-md px-3 py-2 text-sm transition-colors",
+                "rounded-xl px-4 py-3 text-center text-sm transition-colors",
                 active
                   ? "bg-muted font-medium text-foreground"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -52,7 +53,7 @@ export default function Sidebar() {
           );
         })}
 
-        <QuickActions className="mt-3" />
+        <QuickActionsCompact />
       </nav>
     </div>
   );
