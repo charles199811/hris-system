@@ -36,6 +36,7 @@ export const DEFAULT_PAYMENT_METHOD =
   process.env.DEFAULT_PAYMENT_METHOD || "PayPal";
 
 export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 6;
+export const APP_SIDEBAR_WIDTH_CLASS = "w-72";
 
 export const productDefualtValues = {
   name: "",

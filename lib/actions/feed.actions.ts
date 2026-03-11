@@ -66,7 +66,10 @@ export async function setReaction(postId: string, reactionType: string) {
 
   const parsed = reactionSchema.safeParse({ postId, reactionType });
   if (!parsed.success)
-    return { success: false, message: parsed.error.issues[0]?.message ?? "Invalid reaction" };
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message ?? "Invalid reaction",
+    };
 
   const { postId: validPostId, reactionType: validReactionType } = parsed.data;
 
@@ -84,7 +87,11 @@ export async function setReaction(postId: string, reactionType: string) {
     });
   } else {
     await prisma.feedReaction.create({
-      data: { postId: validPostId, userId: session.user.id, type: validReactionType },
+      data: {
+        postId: validPostId,
+        userId: session.user.id,
+        type: validReactionType,
+      },
     });
   }
 

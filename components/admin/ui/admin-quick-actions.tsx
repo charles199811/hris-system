@@ -14,28 +14,27 @@ const actions = [
 
 export default function AdminQuickActions() {
   return (
-    <Card className="mt-3 rounded-xl border bg-background/90 p-3 shadow-sm">
-      <div className="mb-3 flex items-center gap-2">
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-          <Sparkles className="h-4 w-4" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-foreground">Quick Actions</p>
-          <p className="text-xs text-muted-foreground">Common admin tasks</p>
-        </div>
-      </div>
+    <Card className="mt-3 rounded-2xl border-slate-200 bg-white/70 p-4 shadow-sm backdrop-blur hover:-translate-y-1 hover:border-blue-200 hover:bg-blue-50/70 hover:shadow">
+      
 
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-3">
         {actions.map(({ title, href, Icon }) => (
           <Button
             key={title}
             asChild
             variant="outline"
-            className="h-auto min-h-16 flex-col gap-1 rounded-lg px-2 py-3 text-xs"
+            className="
+              group h-11 flex-col items-center justify-center gap-1
+              rounded-xl border-slate-200 bg-white/70
+              text-xs font-medium text-slate-800
+              transition
+              hover:-translate-y-1 hover:border-blue-200
+              hover:bg-blue-50/70 hover:shadow
+            "
           >
             <Link href={href}>
-              <Icon className="h-4 w-4" />
-              <span>{title}</span>
+              <Icon className="h-4 w-4 text-slate-600 group-hover:text-blue-700" />
+              {title}
             </Link>
           </Button>
         ))}

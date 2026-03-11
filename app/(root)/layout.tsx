@@ -1,4 +1,4 @@
-import { APP_NAME } from "@/lib/constants";
+import { APP_NAME, APP_SIDEBAR_WIDTH_CLASS } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import Menu from "@/components/shared/header/menu";
@@ -34,7 +34,7 @@ export default function RootLayout({
       <div className="flex-1">
         <div className="container mx-auto flex gap-6">
           {/* Sidebar */}
-          <aside className="hidden md:block w-72 border-r py-5">
+          <aside className={`hidden md:block ${APP_SIDEBAR_WIDTH_CLASS} border-r py-5`}>
             <UserSidebar />
           </aside>
           {/* Page content */}
