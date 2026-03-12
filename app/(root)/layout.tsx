@@ -2,16 +2,19 @@ import { APP_NAME, APP_SIDEBAR_WIDTH_CLASS } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import Menu from "@/components/shared/header/menu";
+import { auth } from "@/auth";
 // import MainNav from "./main-nav";
 import { Input } from "@/components/ui/input";
 import UserSidebar from "@/components/user-dashboard/users-sidebar";
 // import AdminSearch from "@/components/admin/admin-search";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -35,7 +38,7 @@ export default function RootLayout({
         <div className="container mx-auto flex gap-6">
           {/* Sidebar */}
           <aside className={`hidden md:block ${APP_SIDEBAR_WIDTH_CLASS} border-r py-5`}>
-            <UserSidebar />
+            <UserSidebar role={session?.user?.role} />
           </aside>
           {/* Page content */}
           <main className="flex-1 py-5">{children}</main>

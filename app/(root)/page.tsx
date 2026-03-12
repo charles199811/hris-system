@@ -10,15 +10,12 @@ import { getFeedPosts } from "@/lib/feed/getFeedPoosts";
 import { auth } from "@/auth";
 import { QuickActions } from "./user/profile/quick-actions";
 import { canCreateFeedPost, canManageFeed } from "@/lib/auth/roles";
+import { getUpcomingBirthdays } from "@/lib/user/get-upcoming-birthdays";
 
 const Homepage = async () => {
-  const birthdayUsers = [
-    { id: "1", name: "Salah", subtitle: "Today" },
-    { id: "2", name: "Ludo", subtitle: "Tomorrow" },
-    { id: "3", name: "Shena", subtitle: "6 Feb" },
-  ];
   const session = await auth();
   const posts = await getFeedPosts(session?.user?.id);
+  const birthdayUsers = await getUpcomingBirthdays(8);
   const canPostToFeed = canCreateFeedPost(session?.user?.role);
   const canModerateFeed = canManageFeed(session?.user?.role);
   return (
@@ -49,7 +46,7 @@ const Homepage = async () => {
         {/* RIGHT COLUMN */}
         <div className="lg:col-span-4 space-y-6">
           <AttendanceCard />
-          <QuickActions className="mt-3" />
+          <QuickActions className="mt-3" role={session?.user?.role} />
         </div>
         
       </div>

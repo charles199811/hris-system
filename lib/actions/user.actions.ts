@@ -1,6 +1,12 @@
 "use server";
 
-import { createUserSchema, signInFormSchema, signUpFormSchema, updateUserSchema } from "../validators";
+import {
+  createUserSchema,
+  signInFormSchema,
+  signUpFormSchema,
+  updateProfileSchema,
+  updateUserSchema,
+} from "../validators";
 import { auth, signIn, signOut } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashSync } from "bcrypt-ts-edge";
@@ -87,14 +93,24 @@ export async function getUserById(userId: string) {
 }
 
 //Update the user profile
-type UserProps = {
-  name: string;
-  email: string;
-};
-
-export async function updateProfile(user: UserProps) {
+export async function updateProfile(prevState: unknown, formData: FormData) {
   try {
     const session = await auth();
+    if (!session?.user?.id) {
+      return { success: false, message: "Not authenticated" };
+    }
+
+    const parsed = updateProfileSchema.parse({
+      name: formData.get("name"),
+      email: formData.get("email"),
+      about: formData.get("about"),
+      linkedIn: formData.get("linkedIn"),
+      hobbies: formData.get("hobbies"),
+      superpowers: formData.get("superpowers"),
+      mostFascinatingTrip: formData.get("mostFascinatingTrip"),
+      dreamTravelDestination: formData.get("dreamTravelDestination"),
+      dateOfBirth: formData.get("dateOfBirth"),
+    });
 
     const currentUser = await prisma.user.findFirst({
       where: {
@@ -108,17 +124,34 @@ export async function updateProfile(user: UserProps) {
         id: currentUser.id,
       },
       data: {
-        name: user.name,
+        name: parsed.name,
+        about: emptyToNull(parsed.about),
+        linkedIn: emptyToNull(parsed.linkedIn),
+        hobbies: emptyToNull(parsed.hobbies),
+        superpowers: emptyToNull(parsed.superpowers),
+        mostFascinatingTrip: emptyToNull(parsed.mostFascinatingTrip),
+        dreamTravelDestination: emptyToNull(parsed.dreamTravelDestination),
+        dateOfBirth: parsed.dateOfBirth
+          ? new Date(`${parsed.dateOfBirth}T00:00:00.000Z`)
+          : null,
       },
     });
 
+    revalidatePath("/");
+    revalidatePath("/user/profile");
+    revalidatePath("/user/profile/edit");
+
     return {
       success: true,
-      message: "User updated successfully",
+      message: "Profile updated successfully",
     };
   } catch (error) {
     return { success: false, message: formatError(error) };
   }
+}
+
+function emptyToNull(value?: string) {
+  return value && value.trim().length > 0 ? value.trim() : null;
 }
 
 //Get all Users

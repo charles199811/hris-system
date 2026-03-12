@@ -11,7 +11,7 @@ const links = [
   // { title: "", href: "" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ role }: { role?: string | null }) {
   const pathname = usePathname();
   const overviewLink = links[0];
 
@@ -53,7 +53,7 @@ export default function Sidebar() {
           );
         })}
 
-        <QuickActionsCompact />
+        <QuickActionsCompact role={role} />
       </nav>
     </div>
   );

@@ -19,124 +19,29 @@ import {
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { getTodayWorkforce } from "@/lib/attendance/getTodayWorkForce";
-import { getAttendanceAlerts } from "@/lib/attendance/getAttendanceAlert";
-
-// -----------------------------
-// Types (UI layer)
-// -----------------------------
-type Role = "ADMIN" | "HR" | "MANAGER" | "FINANCE" | "EMPLOYEE";
-
-type AttendanceRow = {
-  id: string;
-  name: string;
-  role: Role;
-  country: string;
-  checkInAt?: string; // ISO or formatted string
-  checkOutAt?: string; // ISO or formatted string
-  workingHours: number; // e.g. 7.5
-};
-
-type NotActiveRow = {
-  id: string;
-  name: string;
-  role: Role;
-  country: string;
-  reason: "On Leave" | "Public Holiday" | "No Check-in";
-  leaveNote?: string; // e.g. "Annual Leave (10–12 Feb)"
-};
-
-type AlertRow = {
-  id: string;
-  name: string;
-  role: Role;
-  country: string;
-  lastActivity: string; // e.g. "2026-02-08"
-  daysMissing: number;
-};
-
-// -----------------------------
-// Helpers
-// -----------------------------
-function formatHours(hours: number) {
-  // show like "7.5h" or "0h"
-  const rounded = Math.round(hours * 10) / 10;
-  return `${rounded}h`;
-}
-
-function roleBadgeVariant(role: Role) {
-  // simple, readable mapping (change if you already have a standard)
-  switch (role) {
-    case "ADMIN":
-      return "destructive";
-    case "HR":
-      return "secondary";
-    case "MANAGER":
-      return "default";
-    case "FINANCE":
-      return "outline";
-    case "EMPLOYEE":
-    default:
-      return "secondary";
-  }
-}
-
-function reasonBadgeClass(reason: NotActiveRow["reason"]) {
-  // Tailwind classes for quick differentiation (shadcn Badge supports className)
-  switch (reason) {
-    case "On Leave":
-      return "bg-yellow-100 text-yellow-900 hover:bg-yellow-100";
-    case "Public Holiday":
-      return "bg-blue-100 text-blue-900 hover:bg-blue-100";
-    case "No Check-in":
-    default:
-      return "bg-red-100 text-red-900 hover:bg-red-100";
-  }
-}
-
-function kpiValue(n: number) {
-  return n.toLocaleString();
-}
+import {
+  formatCountryName,
+  formatHours,
+  getOverviewPageData,
+  getCountryFlagClass,
+  kpiValue,
+  reasonBadgeClass,
+  roleBadgeVariant,
+  type Role,
+} from "./overview-utils";
 
 export default async function OverviewPage() {
-  // Phase 1 UI: mock data (replace with DB/API later)
-  const data = await getTodayWorkforce();
-
-  const onlineToday: AttendanceRow[] = data.rows
-    .filter((r) => r.isOnline)
-    .map((r) => ({
-      id: r.id,
-      name: r.name as string,
-      role: r.role as Role,
-      country: r.country as string,
-      checkInAt: r.checkIn ?? "—",
-      checkOutAt: r.checkOut ?? undefined,
-      workingHours: r.workingHours ?? 0,
-    }));
-
-  const notActiveToday: NotActiveRow[] = data.rows
-    .filter((r) => !r.isOnline)
-    .map((r) => ({
-      id: r.id,
-      name: r.name as string,
-      role: r.role as Role,
-      country: r.country as string,
-      reason: "No Check-in",
-      leaveNote: undefined,
-    }));
-
-  const alerts = await getAttendanceAlerts({
-    windowDays: 7,
-    minMissingDays: 2,
-  });
-  const alertCount = alerts.length;
-
-  const onlineCount = data.onlineCount;
-  const notActiveCount = data.notActiveCount;
+  const {
+    onlineToday,
+    notActiveToday,
+    alerts,
+    alertCount,
+    onlineCount,
+    notActiveCount,
+  } = await getOverviewPageData();
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -157,7 +62,6 @@ export default async function OverviewPage() {
         </div>
       </div>
 
-      {/* Top KPI row */}
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -190,13 +94,11 @@ export default async function OverviewPage() {
         </Card>
       </div>
 
-      {/* Main grid */}
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Attendance Tabs */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Attendance</CardTitle>
-            <CardDescription>Today’s workforce status</CardDescription>
+            <CardDescription>Today's workforce status</CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="online" className="w-full">
@@ -215,7 +117,6 @@ export default async function OverviewPage() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Online */}
               <TabsContent value="online" className="mt-4">
                 <div className="rounded-md border">
                   <ScrollArea className="h-[360px]">
@@ -244,11 +145,27 @@ export default async function OverviewPage() {
                                 {row.role}
                               </Badge>
                             </TableCell>
-                            <TableCell>{row.country ?? "-"}</TableCell>
+                            <TableCell>
+                              <span
+                                className="inline-flex items-center gap-2"
+                                title={formatCountryName(row.country)}
+                                aria-label={formatCountryName(row.country)}
+                              >
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100">
+                                  <span
+                                    aria-hidden="true"
+                                    className={`${getCountryFlagClass(row.country)} overflow-hidden rounded-sm shadow-sm`}
+                                  />
+                                </span>
+                                <span className="text-sm">
+                                  {formatCountryName(row.country)}
+                                </span>
+                              </span>
+                            </TableCell>
                             <TableCell>{row.checkInAt ?? "-"}</TableCell>
                             <TableCell>
                               {row.checkOutAt ?? (
-                                <span className="text-muted-foreground">—</span>
+                                <span className="text-muted-foreground">-</span>
                               )}
                             </TableCell>
                             <TableCell className="text-right font-semibold">
@@ -273,7 +190,6 @@ export default async function OverviewPage() {
                 </div>
               </TabsContent>
 
-              {/* Not Active */}
               <TabsContent value="not-active" className="mt-4">
                 <div className="rounded-md border">
                   <ScrollArea className="h-[360px]">
@@ -299,7 +215,23 @@ export default async function OverviewPage() {
                                 {row.role}
                               </Badge>
                             </TableCell>
-                            <TableCell>{row.country}</TableCell>
+                            <TableCell>
+                              <span
+                                className="inline-flex items-center gap-2"
+                                title={formatCountryName(row.country)}
+                                aria-label={formatCountryName(row.country)}
+                              >
+                                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100">
+                                  <span
+                                    aria-hidden="true"
+                                    className={`${getCountryFlagClass(row.country)} overflow-hidden rounded-sm shadow-sm`}
+                                  />
+                                </span>
+                                <span className="text-sm">
+                                  {formatCountryName(row.country)}
+                                </span>
+                              </span>
+                            </TableCell>
                             <TableCell>
                               <Badge
                                 className={reasonBadgeClass(row.reason)}
@@ -309,7 +241,7 @@ export default async function OverviewPage() {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-muted-foreground">
-                              {row.leaveNote ?? "—"}
+                              {row.leaveNote ?? "-"}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -333,7 +265,6 @@ export default async function OverviewPage() {
           </CardContent>
         </Card>
 
-        {/* Alerts */}
         <Card>
           <CardHeader>
             <CardTitle>Attendance Alerts</CardTitle>
@@ -361,41 +292,46 @@ export default async function OverviewPage() {
                 </div>
               </AlertTitle>
               <AlertDescription className="text-sm text-muted-foreground">
-                Only alert employees with no activity AND no approved
-                leave/public holiday.
+                Only alert employees with no activity and no approved leave or
+                public holiday.
               </AlertDescription>
             </Alert>
 
             <div className="rounded-md border">
               <ScrollArea className="h-[280px]">
-                <div className="p-3 space-y-2">
-                  {alerts.map((a) => (
+                <div className="space-y-2 p-3">
+                  {alerts.map((alert) => (
                     <div
-                      key={a.id}
+                      key={alert.id}
                       className="flex items-start justify-between gap-3 rounded-lg border bg-card p-3"
                     >
                       <div className="min-w-0">
-                        <p className="truncate font-medium">{a.name}</p>
+                        <p className="truncate font-medium">{alert.name}</p>
                         <div className="mt-1 flex flex-wrap items-center gap-2">
-                          <Badge variant={roleBadgeVariant(a.role as Role)}>
-                            {a.role}
+                          <Badge
+                            variant={roleBadgeVariant(alert.role as Role)}
+                          >
+                            {alert.role}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
-                            {a.country}
+                            {alert.country}
                           </span>
                         </div>
                         <p className="mt-2 text-xs text-muted-foreground">
                           Last activity:{" "}
-                          <span className="font-medium">{a.lastActivity}</span>{" "}
-                          • Missing:{" "}
+                          <span className="font-medium">
+                            {alert.lastActivity}
+                          </span>{" "}
+                          | Missing:{" "}
                           <span
                             className={
-                              a.daysMissing >= 3
+                              alert.daysMissing >= 3
                                 ? "font-semibold text-red-700"
                                 : "font-medium"
                             }
                           >
-                            {a.daysMissing} day{a.daysMissing === 1 ? "" : "s"}
+                            {alert.daysMissing} day
+                            {alert.daysMissing === 1 ? "" : "s"}
                           </span>
                         </p>
                       </div>
@@ -406,7 +342,7 @@ export default async function OverviewPage() {
                         variant="outline"
                         className="shrink-0"
                       >
-                        <Link href={`/admin/employees?userId=${a.id}`}>
+                        <Link href={`/admin/employees?userId=${alert.id}`}>
                           View Employee
                         </Link>
                       </Button>
@@ -415,7 +351,7 @@ export default async function OverviewPage() {
 
                   {alerts.length === 0 && (
                     <div className="py-10 text-center text-sm text-muted-foreground">
-                      No alerts 🎉
+                      No alerts.
                     </div>
                   )}
                 </div>
@@ -426,7 +362,4 @@ export default async function OverviewPage() {
       </div>
     </div>
   );
-}
-function getTodayWorkForce() {
-  throw new Error("Function not implemented.");
 }

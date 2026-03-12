@@ -132,31 +132,39 @@ enum AttendanceStatus {
 }
 
 model User {
-  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String?   @default("No NAME")
-  email         String    @unique(map: "user_email_idx")
-  emailVerified DateTime? @db.Timestamp(6)
-  image         String?
-  password      String? //for Hash password we can use bcrypt 
-  role          UserRole  @default(USER)
-  mfaEnabled    Boolean   @default(false)
-  permissions   String[]  @default([])
-  dateOfBirth   DateTime? @db.Date
-  employee      Employee?
-  country       Country?
+  id                     String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                   String?     @default("No NAME")
+  email                  String      @unique(map: "user_email_idx")
+  emailVerified          DateTime?   @db.Timestamp(6)
+  image                  String?
+  password               String?     //for Hash password we can use bcrypt
+  role                   UserRole    @default(USER)
+  mfaEnabled             Boolean     @default(false)
+  permissions            String[]    @default([])
+  dateOfBirth            DateTime?   @db.Date
 
-  sessions        Session[]
-  account         Account[]
-  attendances     Attendance[]
-  requests        Request[]
-  requestActivity RequestActivity[]
-  notifications   Notification[]
-  feedPost        FeedPost[]
-  feedReaction    FeedReaction[]
-  feedComments    FeedComment[]
+  about                  String?     @db.Text
+  linkedIn               String?
+  hobbies                String?     @db.Text
+  superpowers            String?     @db.Text
+  mostFascinatingTrip    String?     @db.Text
+  dreamTravelDestination String?
 
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt
+  employee               Employee?
+  country                Country?
+
+  sessions               Session[]
+  account                Account[]
+  attendances            Attendance[]
+  requests               Request[]
+  requestActivity        RequestActivity[]
+  notifications          Notification[]
+  feedPost               FeedPost[]
+  feedReaction           FeedReaction[]
+  feedComments           FeedComment[]
+
+  createdAt              DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt              DateTime    @updatedAt
 }
 
 model Account {

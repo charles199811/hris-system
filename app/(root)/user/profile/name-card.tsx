@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { prisma } from "@/db/prisma";
 import { redirect } from "next/navigation";
 import NameCardClient from "./name-card.client";
 
@@ -6,10 +7,15 @@ const NameCard = async () => {
   const session = await auth();
   if (!session?.user) redirect("/sign-in");
 
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, role: true },
+  });
+
   return (
     <NameCardClient
-      name={session.user.name ?? "Employee"}
-      role={session.user.role ?? "USER"}
+      name={currentUser?.name ?? session.user.name ?? "Employee"}
+      role={currentUser?.role ?? session.user.role ?? "USER"}
     />
   );
 };

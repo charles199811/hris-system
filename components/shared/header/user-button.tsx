@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { prisma } from "@/db/prisma";
 import { signOutUser } from "@/lib/actions/user.actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,15 @@ const UserButton = async () => {
     );
   }
 
-  const firstInitial = session.user?.name?.charAt(0).toUpperCase() ?? "U";
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { name: true, email: true, role: true },
+  });
+
+  const displayName = currentUser?.name ?? session.user?.name ?? "User";
+  const displayEmail = currentUser?.email ?? session.user?.email ?? "";
+  const displayRole = currentUser?.role ?? session.user.role;
+  const firstInitial = displayName.charAt(0).toUpperCase() || "U";
 
   return (
     <div className="flex gap-2 items-center">
@@ -43,15 +52,21 @@ const UserButton = async () => {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <div className="text-sm font-medium leading-none">
-                {session.user?.name}
+                {displayName}
               </div>
               <div className="text-sm text-muted-foreground leading-none">
-                {session.user?.email}
+                {displayEmail}
               </div>
             </div>
           </DropdownMenuLabel>
 
-          {(session.user.role === "ADMIN" || session.user.role === "HR") && (
+          <DropdownMenuItem>
+            <Link href="/user/profile/edit" className="w-full">
+              Edit Profile
+            </Link>
+          </DropdownMenuItem>
+
+          {(displayRole === "ADMIN" || displayRole === "HR") && (
             <DropdownMenuItem>
               <Link href="/admin/overview" className="w-full">
                 Admin

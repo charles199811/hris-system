@@ -4,26 +4,43 @@ import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { canManageAttendance } from "@/lib/auth/roles";
 import {
   CalendarDays,
+  ClipboardList,
   MessageSquareText,
   Table2,
   Wallet,
   Sparkles,
 } from "lucide-react";
 
-const actions = [
+const baseActions = [
   { title: "Payrolls", href: "/admin/payrolls", Icon: Wallet },
-  { title: "Attendance", href: "/admin/attendance", Icon: Table2 },
   { title: "Calendar", href: "/admin/calendar", Icon: CalendarDays },
   { title: "Support", href: "/user/requests", Icon: MessageSquareText },
 ];
 
 type QuickActionsProps = {
   className?: string;
+  role?: string | null;
 };
 
-export function QuickActions({ className }: QuickActionsProps) {
+function getQuickActions(role?: string | null) {
+  const attendanceAction = canManageAttendance(role)
+    ? { title: "Attendance", href: "/admin/attendance", Icon: Table2 }
+    : { title: "Score Card", href: "/user/scorecard", Icon: ClipboardList };
+
+  return [
+    baseActions[0],
+    attendanceAction,
+    baseActions[1],
+    baseActions[2],
+  ];
+}
+
+export function QuickActions({ className, role }: QuickActionsProps) {
+  const actions = getQuickActions(role);
+
   return (
     <Card
       className={cn(
@@ -69,7 +86,9 @@ export function QuickActions({ className }: QuickActionsProps) {
   );
 }
 
-export function QuickActionsCompact({ className }: QuickActionsProps) {
+export function QuickActionsCompact({ className, role }: QuickActionsProps) {
+  const actions = getQuickActions(role);
+
   return (
     <div className={cn("mt-2 grid grid-cols-2 gap-3", className)}>
       {actions.map(({ title, href, Icon }) => (

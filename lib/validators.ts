@@ -25,13 +25,36 @@ export const signUpFormSchema = z
   });
 
 //Schema for updating the user profile
-export const updateProfileSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters").nullable(),
-  email: z.string().min(3, "Email must be at least 3 characters").nullable(),
+const optionalProfileText = z.string().trim().max(1000).optional();
+const optionalProfileLink = z
+  .string()
+  .trim()
+  .url("Enter a valid LinkedIn URL")
+  .or(z.literal(""))
+  .optional();
+const optionalProfileDate = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Enter a valid date")
+  .or(z.literal(""))
+  .optional();
+
+const updateBasicUserSchema = z.object({
+  name: z.string().trim().min(3, "Name must be at least 3 characters"),
+  email: z.string().trim().email("Enter a valid email"),
+});
+
+export const updateProfileSchema = updateBasicUserSchema.extend({
+  about: optionalProfileText,
+  linkedIn: optionalProfileLink,
+  hobbies: optionalProfileText,
+  superpowers: optionalProfileText,
+  mostFascinatingTrip: optionalProfileText,
+  dreamTravelDestination: z.string().trim().max(255).optional(),
+  dateOfBirth: optionalProfileDate,
 });
 
 //Schema to update user
-export const updateUserSchema = updateProfileSchema.extend({
+export const updateUserSchema = updateBasicUserSchema.extend({
   id: z.string().min(1, "ID is required"),
   role: z.nativeEnum(UserRole),
   country: z.nativeEnum(Country).nullable().optional(),
