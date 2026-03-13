@@ -42,6 +42,7 @@ function getSidebarItems(role?: string | null): SidebarItem[] {
     },
     {
       title: "Docs",
+      href: "/user/documents",
       icon: FileText,
     },
     {
