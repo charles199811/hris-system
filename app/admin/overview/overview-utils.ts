@@ -28,18 +28,22 @@ export function formatHours(hours: number) {
 }
 
 export function roleBadgeVariant(role: Role) {
+  return "outline" as const;
+}
+
+export function roleBadgeClass(role: Role) {
   switch (role) {
     case "ADMIN":
-      return "destructive" as const;
+      return "border-red-200 bg-red-100 text-red-800 hover:bg-red-100";
     case "HR":
-      return "secondary" as const;
+      return "border-fuchsia-200 bg-fuchsia-100 text-fuchsia-800 hover:bg-fuchsia-100";
     case "MANAGER":
-      return "default" as const;
+      return "border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-100";
     case "FINANCE":
-      return "outline" as const;
+      return "border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100";
     case "EMPLOYEE":
     default:
-      return "secondary" as const;
+      return "border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100";
   }
 }
 

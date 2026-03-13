@@ -26,6 +26,7 @@ import {
   getCountryFlagClass,
   kpiValue,
   reasonBadgeClass,
+  roleBadgeClass,
   roleBadgeVariant,
   type Role,
 } from "./overview-utils";
@@ -141,7 +142,10 @@ export default async function OverviewPage() {
                               {row.name}
                             </TableCell>
                             <TableCell>
-                              <Badge variant={roleBadgeVariant(row.role)}>
+                              <Badge
+                                variant={roleBadgeVariant(row.role)}
+                                className={roleBadgeClass(row.role)}
+                              >
                                 {row.role}
                               </Badge>
                             </TableCell>
@@ -211,7 +215,10 @@ export default async function OverviewPage() {
                               {row.name}
                             </TableCell>
                             <TableCell>
-                              <Badge variant={roleBadgeVariant(row.role)}>
+                              <Badge
+                                variant={roleBadgeVariant(row.role)}
+                                className={roleBadgeClass(row.role)}
+                              >
                                 {row.role}
                               </Badge>
                             </TableCell>
@@ -310,6 +317,7 @@ export default async function OverviewPage() {
                         <div className="mt-1 flex flex-wrap items-center gap-2">
                           <Badge
                             variant={roleBadgeVariant(alert.role as Role)}
+                            className={roleBadgeClass(alert.role as Role)}
                           >
                             {alert.role}
                           </Badge>

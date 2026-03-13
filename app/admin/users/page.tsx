@@ -14,10 +14,35 @@ import Link from "next/link"
 import Pagination from "@/components/shared/header/pagination";
 import { Badge } from "@/components/ui/badge";
 import DeleteDialog from "@/components/shared/delete-dialog";
+import { UserRole } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Admin Users",
 };
+
+function roleBadgeClass(role: UserRole) {
+  switch (role) {
+    case "ADMIN":
+      return "border-red-200 bg-red-100 text-red-800";
+    case "HR":
+      return "border-fuchsia-200 bg-fuchsia-100 text-fuchsia-800";
+    case "MANAGER":
+      return "border-amber-200 bg-amber-100 text-amber-800";
+    case "FINANCE":
+      return "border-emerald-200 bg-emerald-100 text-emerald-800";
+    case "ANALYST":
+      return "border-cyan-200 bg-cyan-100 text-cyan-800";
+    case "EMPLOYEE":
+      return "border-blue-200 bg-blue-100 text-blue-800";
+    case "USER":
+    default:
+      return "border-slate-200 bg-slate-100 text-slate-800";
+  }
+}
+
+function formatRoleLabel(role: UserRole) {
+  return role.charAt(0) + role.slice(1).toLowerCase();
+}
 
 const AdminUserPage = async (props: {
   searchParams: Promise<{
@@ -62,18 +87,9 @@ const AdminUserPage = async (props: {
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
-                  {user.role === "USER" && (
-                    <Badge variant="secondary">User</Badge>
-                  )}
-                  {user.role === "ADMIN" && (
-                    <Badge variant="destructive">Admin</Badge>
-                  )}
-                  {user.role === "EMPLOYEE" && (
-                    <Badge variant="default">Employee</Badge>
-                  )}
-                  {user.role === "HR" && (
-                    <Badge variant="outline">HR</Badge>
-                  )}
+                  <Badge variant="outline" className={roleBadgeClass(user.role)}>
+                    {formatRoleLabel(user.role)}
+                  </Badge>
                 </TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">

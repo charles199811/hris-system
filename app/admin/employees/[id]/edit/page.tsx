@@ -47,35 +47,50 @@ export default async function EditEmployeePage({
         <h1 className="text-3xl font-semibold">
           Edit Employee: {employee.fullName}
         </h1>
-        <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-          <div>
-            Email: <span className="text-foreground">{employee.email}</span>
-          </div>
-          <div>
-            Phone:{" "}
-            <span className="text-foreground">
-              {employee.phoneNo ?? "Not set"}
-            </span>
-          </div>
-          <div>
-            Department:{" "}
-            <span className="text-foreground">
-              {employee.department?.departmentName ?? "Not assigned"}
-            </span>
-          </div>
-          <div>
-            Position:{" "}
-            <span className="text-foreground">
-              {employee.position
-                ? formatEnumLabel(employee.position)
-                : "Not assigned"}
-            </span>
-          </div>
-          <div>
-            Branch:{" "}
-            <span className="text-foreground">
-              {employee.branch?.branchName ?? "Not assigned"}
-            </span>
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Email
+              </p>
+              <p className="text-sm font-medium text-slate-900">
+                {employee.email}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Phone
+              </p>
+              <p className="text-sm font-medium text-slate-900">
+                {employee.phoneNo ?? "Not set"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Department
+              </p>
+              <p className="text-sm font-medium text-slate-900">
+                {employee.department?.departmentName ?? "Not assigned"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Branch
+              </p>
+              <p className="text-sm font-medium text-slate-900">
+                {employee.branch?.branchName ?? "Not assigned"}
+              </p>
+            </div>
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                Position
+              </p>
+              <p className="text-sm font-medium text-slate-900">
+                {employee.position
+                  ? formatEnumLabel(employee.position)
+                  : "Not assigned"}
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { User } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,27 +37,36 @@ const SignInPage = async (props: {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Card>
-        <CardHeader className="space-y-4">
-          <Link href="/" className="flex-center">
-            <Image
-              src="/images/favicon.png"
-              width={148}
-              height={148}
-              alt={`${APP_NAME} logo`}
-              priority={true}
-            />
-          </Link>
-          <CardTitle className="text-center"> Sign In </CardTitle>
-          <CardDescription className="text-center">
-            Sign in to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <CredentialsSignInForm />
-        </CardContent>
-      </Card>
+    <div className="w-full max-w-6xl">
+      <div className="grid items-center gap-12 md:grid-cols-[520px_minmax(0,480px)] md:justify-end">
+        <Link href="/" className="flex items-center justify-center self-center md:justify-start">
+          <Image
+            src="/images/favicon.png"
+            width={420}
+            height={420}
+            alt={`${APP_NAME} logo`}
+            priority={true}
+            className="h-auto w-full max-w-[420px] object-contain"
+          />
+        </Link>
+
+        <Card>
+          <CardHeader className="space-y-4">
+            <div className="flex justify-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-900 shadow-sm">
+                <User className="h-6 w-6" />
+              </div>
+            </div>
+            <CardTitle className="text-center"> Sign In </CardTitle>
+            <CardDescription className="text-center">
+              Sign in to your account
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <CredentialsSignInForm />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
